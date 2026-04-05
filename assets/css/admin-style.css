@@ -1,0 +1,235 @@
+/**
+ * DarkShield Admin Styles
+ *
+ * @package DarkShield
+ * @since 1.0.0
+ */
+
+/* ========================================
+   Nav Tabs
+   ======================================== */
+
+.darkshield .nav-tab-wrapper {
+    margin-bottom: 0;
+}
+
+/* ========================================
+   Cards
+   ======================================== */
+
+.darkshield-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* ========================================
+   Badges
+   ======================================== */
+
+.darkshield-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #f0f0f1;
+    color: #50575e;
+}
+
+.darkshield-badge-fonts     { background: #fef0f5; color: #b32d6b; }
+.darkshield-badge-cdn       { background: #f0f6fc; color: #2271b1; }
+.darkshield-badge-analytics { background: #fcf0f1; color: #d63638; }
+.darkshield-badge-updates   { background: #fff8e5; color: #996800; }
+.darkshield-badge-gravatar  { background: #f0f0f1; color: #50575e; }
+.darkshield-badge-embeds    { background: #edf7ed; color: #00a32a; }
+.darkshield-badge-recaptcha { background: #f0f6fc; color: #2271b1; }
+.darkshield-badge-messenger { background: #edf7ed; color: #00a32a; }
+.darkshield-badge-misc      { background: #f0f0f1; color: #50575e; }
+.darkshield-badge-unknown   { background: #f0f0f1; color: #999; }
+.darkshield-badge-css       { background: #f0f6fc; color: #2271b1; }
+.darkshield-badge-js        { background: #fff8e5; color: #996800; }
+.darkshield-badge-image     { background: #edf7ed; color: #00a32a; }
+.darkshield-badge-iframe    { background: #fcf0f1; color: #d63638; }
+.darkshield-badge-css_inline { background: #fef0f5; color: #b32d6b; }
+
+/* ========================================
+   Notices
+   ======================================== */
+
+.darkshield-notice {
+    padding: 12px 15px;
+    border-radius: 4px;
+    border: 1px solid #c3c4c7;
+}
+
+.darkshield-notice-success {
+    background: #edf7ed;
+    border-color: #00a32a;
+}
+
+.darkshield-notice-warning {
+    background: #fff8e5;
+    border-color: #dba617;
+}
+
+.darkshield-notice-error {
+    background: #fcf0f1;
+    border-color: #d63638;
+}
+
+.darkshield-notice-info {
+    background: #f0f6fc;
+    border-color: #2271b1;
+}
+
+/* ========================================
+   Tables
+   ======================================== */
+
+.darkshield-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.darkshield-table th,
+.darkshield-table td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.darkshield-table th {
+    font-weight: 600;
+    color: #50575e;
+}
+
+/* ========================================
+   Progress Bar
+   ======================================== */
+
+.darkshield-progress-wrap {
+    background: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+    height: 24px;
+}
+
+.darkshield-progress-bar {
+    background: #0073aa;
+    height: 24px;
+    width: 0%;
+    text-align: center;
+    color: #fff;
+    font-size: 12px;
+    line-height: 24px;
+    transition: width 0.3s ease;
+}
+
+/* ========================================
+   Stat Cards
+   ======================================== */
+
+.darkshield-stat-card {
+    flex: 1;
+    min-width: 120px;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+}
+
+.darkshield-stat-card h3 {
+    margin: 0 0 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+.darkshield-stat-card p {
+    margin: 0;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* ========================================
+   Waterfall Chart
+   ======================================== */
+
+.darkshield-waterfall {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+
+.darkshield-waterfall-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 11px;
+}
+
+.darkshield-waterfall-label {
+    width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 10px;
+}
+
+.darkshield-waterfall-bar {
+    flex: 1;
+    display: flex;
+    height: 16px;
+    border-radius: 2px;
+    overflow: hidden;
+    background: #e8e8e8;
+}
+
+.darkshield-waterfall-time {
+    width: 65px;
+    text-align: right;
+    padding-left: 8px;
+    font-weight: bold;
+}
+
+/* ========================================
+   Quick Add Buttons
+   ======================================== */
+
+.darkshield-quick-add {
+    transition: all 0.2s ease;
+}
+
+.darkshield-quick-add:hover {
+    border-color: #0073aa;
+    color: #0073aa;
+}
+
+/* ========================================
+   Admin Bar
+   ======================================== */
+
+#wpadminbar .darkshield-admin-bar .ab-item {
+    font-weight: 600;
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+
+@media screen and (max-width: 782px) {
+    .darkshield-waterfall-label {
+        width: 120px;
+    }
+
+    .darkshield-stat-card {
+        min-width: 100px;
+    }
+
+    .darkshield-stat-card p {
+        font-size: 18px;
+    }
+}
