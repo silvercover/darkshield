@@ -42,10 +42,20 @@ class DarkShield_Block_Fonts {
             if ( DarkShield_Utils::is_internal_url( $style->src ) ) {
                 continue;
             }
+            if ( DarkShield_Utils::is_whitelisted( DarkShield_Utils::extract_domain( $style->src ) ) ) {
+                continue;
+            }
             if ( $this->is_font( $style->src ) ) {
                 wp_dequeue_style( $handle );
                 wp_deregister_style( $handle );
-                $logger->log( $style->src, DarkShield_Utils::extract_domain( $style->src ), 'fonts', 'blocker_fonts', DarkShield_Utils::get_mode(), true );
+                $logger->log(
+                    $style->src,
+                    DarkShield_Utils::extract_domain( $style->src ),
+                    'fonts',
+                    'blocker_fonts',
+                    DarkShield_Utils::get_mode(),
+                    true
+                );
             }
         }
     }
@@ -55,6 +65,9 @@ class DarkShield_Block_Fonts {
             return $src;
         }
         if ( strpos( $src, '//' ) === false || DarkShield_Utils::is_internal_url( $src ) ) {
+            return $src;
+        }
+        if ( DarkShield_Utils::is_whitelisted( DarkShield_Utils::extract_domain( $src ) ) ) {
             return $src;
         }
         if ( $this->is_font( $src ) ) {

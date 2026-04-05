@@ -35,7 +35,8 @@ class DarkShield_Admin
 
     public function enqueue_assets($hook)
     {
-        $pages = array(
+        // Method 1: Check hook name (English WordPress)
+        $darkshield_pages = array(
             'toplevel_page_darkshield',
             'darkshield_page_darkshield-scanner',
             'darkshield_page_darkshield-performance',
@@ -45,7 +46,29 @@ class DarkShield_Admin
             'darkshield_page_darkshield-about',
         );
 
-        if (! in_array($hook, $pages, true)) {
+        $is_ds_page = in_array($hook, $darkshield_pages, true);
+
+        // Method 2: Check GET parameter (works for all languages)
+        if (! $is_ds_page) {
+            $page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+            $ds_slugs = array(
+                'darkshield',
+                'darkshield-scanner',
+                'darkshield-performance',
+                'darkshield-settings',
+                'darkshield-log',
+                'darkshield-whitelist',
+                'darkshield-about',
+            );
+            $is_ds_page = in_array($page, $ds_slugs, true);
+        }
+
+        // Method 3: Check hook contains 'darkshield'
+        if (! $is_ds_page) {
+            $is_ds_page = (strpos($hook, 'darkshield') !== false);
+        }
+
+        if (! $is_ds_page) {
             return;
         }
 
@@ -97,13 +120,19 @@ class DarkShield_Admin
         $base = DARKSHIELD_PLUGIN_URL . 'assets/js/';
         $v    = '?ver=' . DARKSHIELD_VERSION;
 
+        // Main admin script
         echo '<script type="text/javascript" src="' . esc_url($base . 'admin-script.js' . $v) . '"></script>' . "\n";
 
-        if ('darkshield_page_darkshield-scanner' === $this->current_hook) {
+        // Detect current page from GET param
+        $page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+
+        // Scanner JS
+        if ('darkshield-scanner' === $page || strpos($this->current_hook, 'scanner') !== false) {
             echo '<script type="text/javascript" src="' . esc_url($base . 'scanner.js' . $v) . '"></script>' . "\n";
         }
 
-        if ('darkshield_page_darkshield-performance' === $this->current_hook) {
+        // Performance JS
+        if ('darkshield-performance' === $page || strpos($this->current_hook, 'performance') !== false) {
             echo '<script type="text/javascript" src="' . esc_url($base . 'performance.js' . $v) . '"></script>' . "\n";
         }
     }
@@ -158,6 +187,32 @@ class DarkShield_Admin
         }
     }
 
+    // ========================================
+    // Frontend Performance Script
+    // ========================================
+
+    public function enqueue_frontend_perf()
+    {
+        if (is_admin() || ! current_user_can('manage_options') || ! is_admin_bar_showing()) {
+            return;
+        }
+        add_action('wp_footer', array($this, 'print_frontend_perf_script'), 999);
+    }
+
+    public function print_frontend_perf_script()
+    {
+        $config = array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('darkshield_nonce'),
+        );
+
+        echo '<script type="text/javascript" id="darkshield-front-config">' . "\n";
+        echo 'var darkshield_front_perf = ' . wp_json_encode($config) . ';' . "\n";
+        echo '</script>' . "\n";
+
+        $url = DARKSHIELD_PLUGIN_URL . 'assets/js/frontend-perf.js?ver=' . DARKSHIELD_VERSION;
+        echo '<script type="text/javascript" src="' . esc_url($url) . '"></script>' . "\n";
+    }
 
     // ========================================
     // Export Handlers
@@ -217,7 +272,7 @@ class DarkShield_Admin
             }
         }
 
-        $sql = "SELECT * FROM {$table} WHERE " . implode(' AND ', $where) . " ORDER BY created_at DESC";
+        $sql  = "SELECT * FROM {$table} WHERE " . implode(' AND ', $where) . " ORDER BY created_at DESC";
         $rows = ! empty($args) ? $wpdb->get_results($wpdb->prepare($sql, $args)) : $wpdb->get_results($sql);
 
         while (ob_get_level() > 0) {
@@ -307,38 +362,5 @@ class DarkShield_Admin
     public function render_about()
     {
         include DARKSHIELD_PLUGIN_DIR . 'admin/views/page-about.php';
-    }
-
-    // ========================================
-    // Frontend Performance Script
-    // ========================================
-
-    /**
-     * Enqueue frontend perf script — only for admins on frontend.
-     */
-    public function enqueue_frontend_perf()
-    {
-        if (is_admin() || ! current_user_can('manage_options') || ! is_admin_bar_showing()) {
-            return;
-        }
-        add_action('wp_footer', array($this, 'print_frontend_perf_script'), 999);
-    }
-
-    /**
-     * Print frontend perf script directly in footer.
-     */
-    public function print_frontend_perf_script()
-    {
-        $config = array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce'    => wp_create_nonce('darkshield_nonce'),
-        );
-
-        echo '<script type="text/javascript" id="darkshield-front-config">' . "\n";
-        echo 'var darkshield_front_perf = ' . wp_json_encode($config) . ';' . "\n";
-        echo '</script>' . "\n";
-
-        $url = DARKSHIELD_PLUGIN_URL . 'assets/js/frontend-perf.js?ver=' . DARKSHIELD_VERSION;
-        echo '<script type="text/javascript" src="' . esc_url($url) . '"></script>' . "\n";
     }
 }

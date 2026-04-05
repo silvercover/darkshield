@@ -8,16 +8,17 @@ class DarkShield_Blocker {
     private $logger;
 
     public function init() {
-        if ( ! DarkShield_Utils::is_blocking_active() ) {
-            return;
-        }
-
         $this->logger = new DarkShield_Logger();
 
-        $this->load_mode();
+        // Specialized blockers — work in ALL modes (including Normal)
+        // They only activate if their setting checkbox is enabled
         $this->load_blockers();
 
-        add_filter( 'pre_http_request', array( $this, 'intercept_http' ), 10, 3 );
+        // Mode-based blocking — only in National/Offline
+        if ( DarkShield_Utils::is_blocking_active() ) {
+            $this->load_mode();
+            add_filter( 'pre_http_request', array( $this, 'intercept_http' ), 10, 3 );
+        }
     }
 
     private function load_mode() {
@@ -60,7 +61,13 @@ class DarkShield_Blocker {
             return $preempt;
         }
 
+        // Never block internal URLs
         if ( DarkShield_Utils::is_internal_url( $url ) ) {
+            return false;
+        }
+
+        // Never block admin-ajax
+        if ( strpos( $url, admin_url( 'admin-ajax.php' ) ) !== false ) {
             return false;
         }
 

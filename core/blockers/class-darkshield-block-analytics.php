@@ -41,9 +41,7 @@ class DarkShield_Block_Analytics {
         if ( ! $wp_scripts instanceof WP_Scripts ) {
             return;
         }
-
         $logger = new DarkShield_Logger();
-
         foreach ( $wp_scripts->registered as $handle => $script ) {
             if ( DarkShield_Utils::is_protected_handle( $handle ) ) {
                 continue;
@@ -54,10 +52,14 @@ class DarkShield_Block_Analytics {
             if ( DarkShield_Utils::is_internal_url( $script->src ) ) {
                 continue;
             }
+            $domain = DarkShield_Utils::extract_domain( $script->src );
+            if ( DarkShield_Utils::is_whitelisted( $domain ) || DarkShield_Utils::is_allowed_service( $domain ) ) {
+                continue;
+            }
             if ( $this->is_analytics( $script->src ) ) {
                 wp_dequeue_script( $handle );
                 wp_deregister_script( $handle );
-                $logger->log( $script->src, DarkShield_Utils::extract_domain( $script->src ), 'analytics', 'blocker_analytics', DarkShield_Utils::get_mode(), true );
+                $logger->log( $script->src, $domain, 'analytics', 'blocker_analytics', DarkShield_Utils::get_mode(), true );
             }
         }
     }
@@ -67,6 +69,10 @@ class DarkShield_Block_Analytics {
             return $src;
         }
         if ( strpos( $src, '//' ) === false || DarkShield_Utils::is_internal_url( $src ) ) {
+            return $src;
+        }
+        $domain = DarkShield_Utils::extract_domain( $src );
+        if ( DarkShield_Utils::is_whitelisted( $domain ) || DarkShield_Utils::is_allowed_service( $domain ) ) {
             return $src;
         }
         if ( $this->is_analytics( $src ) ) {
