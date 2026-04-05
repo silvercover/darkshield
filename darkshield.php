@@ -6,8 +6,8 @@
  * Version:           1.0.0
  * Requires at least: 5.6
  * Requires PHP:      7.4
- * Author:            DarkShield Team
- * Author URI:        https://example.com
+ * Author:            Hamed Takmil (aka silvercover)
+ * Author URI:        https://silvercover.ir
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       darkshield
