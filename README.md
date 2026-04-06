@@ -53,7 +53,7 @@ DarkShield provides three operating modes — Normal, National, and Offline — 
 ---
 
 ## Installation
-cd wp-content/plugins/ git clone https://github.com/your-username/darkshield.git
+cd wp-content/plugins/ git clone https://github.com/silvercover/darkshield.git
 1. Download or clone this repository into your `wp-content/plugins/` directory:
 
 
