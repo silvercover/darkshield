@@ -3,7 +3,7 @@
         'name' => 'silvercover/darkshield',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'ed15d7794ee43ff36490c101689395534e1e5d53',
+        'reference' => '3c6f79edf78cfcfa51dc937ec3b5c25968688a44',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -67,7 +67,7 @@
         'silvercover/darkshield' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'ed15d7794ee43ff36490c101689395534e1e5d53',
+            'reference' => '3c6f79edf78cfcfa51dc937ec3b5c25968688a44',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
