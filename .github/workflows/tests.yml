@@ -38,6 +38,10 @@ jobs:
           php-version: '8.2'
           tools: composer, cs2pr
 
+      - name: Allow Composer plugins
+        run: |
+          composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          
       - name: Install Composer dependencies
         run: |
           composer require --dev wp-coding-standards/wpcs
