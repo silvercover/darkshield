@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       DarkShield
- * Plugin URI:        https://example.com/darkshield
+ * Plugin URI:        https://github.com/silvercover/darkshield
  * Description:       Block external requests, protect privacy, and improve performance in National/Offline modes.
  * Version:           1.0.0
  * Requires at least: 5.6

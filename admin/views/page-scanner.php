@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <div id="darkshield-scan-results">
             <?php
             $scanner = new DarkShield_Scanner();
-            echo $scanner->get_results_html();
+            echo wp_kses_post( $scanner->get_results_html() );
             ?>
         </div>
 

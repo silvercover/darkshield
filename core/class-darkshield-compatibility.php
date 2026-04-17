@@ -59,6 +59,7 @@ class DarkShield_Compatibility {
             if ( in_array( $path, $active, true ) ) {
                 $this->issues[] = array(
                     'type'    => 'info',
+                     /* translators: %s: name of the detected cache plugin */
                     'message' => sprintf(
                         __( '%s detected. Cache will be purged automatically when you change DarkShield mode.', 'darkshield' ),
                         '<strong>' . $name . '</strong>'
@@ -89,11 +90,13 @@ class DarkShield_Compatibility {
         if ( $allowed ) {
             $this->issues[] = array(
                 'type'    => 'info',
+                /* translators: %s: comma-separated list of detected Telegram plugin names */
                 'message' => sprintf( __( 'Telegram plugin(s) detected: %s. Messenger APIs are allowed.', 'darkshield' ), '<strong>' . esc_html( $names ) . '</strong>' ),
             );
         } else {
             $this->issues[] = array(
                 'type'    => 'error',
+                /* translators: %s: comma-separated list of detected Telegram plugin names */
                 'message' => sprintf( __( 'Telegram plugin(s) detected: %s. Messenger APIs are BLOCKED. Enable "Allow Messenger APIs" in settings or add api.telegram.org to whitelist.', 'darkshield' ), '<strong>' . esc_html( $names ) . '</strong>' ),
             );
         }
