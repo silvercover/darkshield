@@ -1,0 +1,43 @@
+{
+    "name": "silvercover/darkshield",
+    "description": "Block external requests, protect privacy, and improve performance in National/Offline modes.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://github.com/silvercover/darkshield",
+    "authors": [
+        {
+            "name": "Hamed Takmil",
+            "homepage": "https://silvercover.ir"
+        }
+    ],
+    "keywords": [
+        "wordpress",
+        "plugin",
+        "security",
+        "privacy",
+        "darkshield"
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "wp-coding-standards/wpcs": "^3.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpcompatibility/phpcompatibility-wp": "^2.1"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "phpcs": "phpcs --standard=WordPress --extensions=php --ignore=vendor/ .",
+        "phpcbf": "phpcbf --standard=WordPress --extensions=php --ignore=vendor/ .",
+        "compat": "phpcs --standard=PHPCompatibilityWP --runtime-set testVersion 7.4- --extensions=php --ignore=vendor/ ."
+    },
+    "support": {
+        "issues": "https://github.com/silvercover/darkshield/issues",
+        "source": "https://github.com/silvercover/darkshield"
+    }
+}
