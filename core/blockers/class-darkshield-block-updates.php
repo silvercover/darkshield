@@ -30,6 +30,21 @@ class DarkShield_Block_Updates {
 
 		// Block HTTP requests to wordpress.org
 		add_filter( 'pre_http_request', array( $this, 'block_wp_org' ), 10, 3 );
+
+		// Suppress WordPress core emoji loader to stop frontend references to s.w.org.
+		// Runs inline because register() already fires during init:10, which is
+		// before wp_head, admin_print_scripts, and the content/email filters execute.
+		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+		remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+		remove_action( 'admin_print_styles', 'print_emoji_styles' );
+		remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
+		remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
+		remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
+
+		add_filter( 'emoji_svg_url', '__return_false' );
+		add_filter( 'tiny_mce_plugins', array( $this, 'strip_tinymce_emoji' ) );
+		add_filter( 'wp_resource_hints', array( $this, 'strip_swo_dns_prefetch' ), 10, 2 );
 	}
 
 	public function empty_update() {
@@ -69,5 +84,34 @@ class DarkShield_Block_Updates {
 		}
 
 		return $preempt;
+	}
+
+	/**
+	 * Remove the wpemoji TinyMCE plugin so the editor stops loading emoji UI assets.
+	 *
+	 * @param array $plugins Registered TinyMCE plugins.
+	 * @return array
+	 */
+	public function strip_tinymce_emoji( $plugins ) {
+		return is_array( $plugins ) ? array_diff( $plugins, array( 'wpemoji' ) ) : array();
+	}
+
+	/**
+	 * Strip s.w.org from the dns-prefetch resource hints emitted by wp_resource_hints().
+	 *
+	 * @param array  $urls          Resource URLs for the current relation.
+	 * @param string $relation_type Relation type (preconnect, dns-prefetch, etc.).
+	 * @return array
+	 */
+	public function strip_swo_dns_prefetch( $urls, $relation_type ) {
+		if ( 'dns-prefetch' === $relation_type ) {
+			$urls = array_filter(
+				(array) $urls,
+				function ( $url ) {
+					return false === strpos( (string) $url, 's.w.org' );
+				}
+			);
+		}
+		return $urls;
 	}
 }
