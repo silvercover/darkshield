@@ -47,6 +47,7 @@ class DarkShield_Blocker {
 			'block_recaptcha' => 'DarkShield_Block_Recaptcha',
 			'block_heartbeat' => 'DarkShield_Block_Heartbeat',
 			'block_email'     => 'DarkShield_Block_Email',
+			'block_emoji'     => 'DarkShield_Block_Emoji',
 		);
 
 		foreach ( $map as $key => $class ) {

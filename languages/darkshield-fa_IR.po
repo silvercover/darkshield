@@ -3,7 +3,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "Project-Id-Version: DarkShield\n"
 "POT-Creation-Date: 2026-04-05 21:33+0330\n"
-"PO-Revision-Date: 2026-04-05 21:43+0330\n"
+"PO-Revision-Date: 2026-05-02 00:37+0330\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1229,3 +1229,11 @@ msgstr "تیم دارک شیلد"
 #. Author URI of the plugin/theme
 msgid "https://example.com"
 msgstr "https://example.com"
+
+#: admin/class-darkshield-settings.php
+msgid "Block WordPress Emoji"
+msgstr "مسدودسازی ایموجی وردپرس"
+
+#: admin/class-darkshield-settings.php
+msgid "Emoji detection script, staticize filters, s.w.org dns-prefetch"
+msgstr "اسکریپت تشخیص ایموجی، فیلترهای تبدیل ایموجی به تصویر، dns-prefetch به s.w.org"

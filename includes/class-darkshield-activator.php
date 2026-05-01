@@ -73,6 +73,7 @@ class DarkShield_Activator {
 					'block_email'     => 0,
 					'allow_messenger' => 1,
 					'log_enabled'     => 1,
+					'block_emoji'      => 1,					
 					'log_retention'   => 30,
 				)
 			);

@@ -1260,3 +1260,11 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "https://example.com"
 msgstr ""
+
+#: admin/class-darkshield-settings.php
+msgid "Block WordPress Emoji"
+msgstr ""
+
+#: admin/class-darkshield-settings.php
+msgid "Emoji detection script, staticize filters, s.w.org dns-prefetch"
+msgstr ""

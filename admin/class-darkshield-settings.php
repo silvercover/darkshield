@@ -58,6 +58,7 @@ class DarkShield_Settings {
 			'block_heartbeat' => array( __( 'Limit Heartbeat API', 'darkshield' ), __( 'Reduce to 120s, disable in Offline', 'darkshield' ) ),
 			'block_email'     => array( __( 'Block Emails (Offline)', 'darkshield' ), __( 'Intercept and log instead of sending', 'darkshield' ) ),
 			'allow_messenger' => array( __( 'Allow Messenger APIs', 'darkshield' ), __( 'Telegram, Slack, Discord, Push', 'darkshield' ) ),
+			'block_emoji'     => array( __( 'Block WordPress Emoji', 'darkshield' ), __( 'Emoji detection script, staticize filters, s.w.org dns-prefetch', 'darkshield' ) ),
 		);
 
 		foreach ( $blockers as $key => $info ) {

@@ -134,6 +134,7 @@ function darkshield_has_jalali() {
 				'block_recaptcha' => 'reCAPTCHA',
 				'block_heartbeat' => 'Heartbeat',
 				'block_email'     => 'Email',
+				'block_emoji'     => 'Emoji',
 				'allow_messenger' => 'Messenger',
 			);
 			foreach ( $labels as $key => $label ) :

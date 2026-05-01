@@ -3,7 +3,7 @@
  * Plugin Name:       DarkShield
  * Plugin URI:        https://github.com/silvercover/darkshield
  * Description:       Block external requests, protect privacy, and improve performance in National/Offline modes.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 5.6
  * Requires PHP:      7.4
  * Author:            Hamed Takmil (aka silvercover)
@@ -77,6 +77,7 @@ require_once DARKSHIELD_PLUGIN_DIR . 'core/blockers/class-darkshield-block-embed
 require_once DARKSHIELD_PLUGIN_DIR . 'core/blockers/class-darkshield-block-recaptcha.php';
 require_once DARKSHIELD_PLUGIN_DIR . 'core/blockers/class-darkshield-block-heartbeat.php';
 require_once DARKSHIELD_PLUGIN_DIR . 'core/blockers/class-darkshield-block-email.php';
+require_once DARKSHIELD_PLUGIN_DIR . 'core/blockers/class-darkshield-block-emoji.php';
 
 // ========================================
 // Activation / Deactivation
