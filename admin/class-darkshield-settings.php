@@ -134,9 +134,11 @@ class DarkShield_Settings {
 			'offline'  => array( '🔴', __( 'Offline — All external blocked', 'darkshield' ), '#d63638' ),
 		);
 		foreach ( $modes as $key => $m ) {
-			$style = ( $mode === $key ) ? 'font-weight:bold;color:' . $m[2] . ';' : '';
+			$active = ( $mode === $key );
+			$style  = $active ? 'color:' . $m[2] . ';' : '';
 			printf(
-				'<label style="display:block;margin-bottom:10px;padding:8px 12px;border:1px solid #ddd;border-radius:4px;%s"><input type="radio" name="darkshield_settings[mode]" value="%s" %s /> %s %s</label>',
+				'<label class="darkshield-mode-option%s" style="%s"><input type="radio" name="darkshield_settings[mode]" value="%s" %s /> %s %s</label>',
+				$active ? ' is-active' : '',
 				esc_attr( $style ),
 				esc_attr( $key ),
 				checked( $mode, $key, false ),
@@ -186,8 +188,9 @@ class DarkShield_Settings {
 			<p><strong><?php esc_html_e( 'Quick Add:', 'darkshield' ); ?></strong></p>
 
 			<!-- Iranian Services -->
-			<p style="margin:10px 0 5px;font-size:12px;font-weight:600;color:#333;">🇮🇷 <?php esc_html_e( 'Iranian Services', 'darkshield' ); ?></p>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px;">
+			<div class="darkshield-quick-add-group">
+			<p>🇮🇷 <?php esc_html_e( 'Iranian Services', 'darkshield' ); ?></p>
+			<div class="darkshield-quick-add-buttons">
 				<?php
 				$iranian = array(
 					__( 'SMS Providers', 'darkshield' )  => "api.kavenegar.com\nrest.payamak-panel.com\napi.sms.ir\napi.ghasedak.me\napi.melipayamak.com\napi2.ippanel.com\napi.limosms.com\napi.farazsms.com\nsms.magfa.com\napi.payamresan.com",
@@ -211,10 +214,12 @@ class DarkShield_Settings {
 				$this->render_quick_buttons( $iranian );
 				?>
 			</div>
+			</div>
 
 			<!-- Messenger APIs -->
-			<p style="margin:10px 0 5px;font-size:12px;font-weight:600;color:#333;">💬 <?php esc_html_e( 'Messenger APIs', 'darkshield' ); ?></p>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px;">
+			<div class="darkshield-quick-add-group">
+			<p>💬 <?php esc_html_e( 'Messenger APIs', 'darkshield' ); ?></p>
+			<div class="darkshield-quick-add-buttons">
 				<?php
 				$messenger = array(
 					__( 'Telegram', 'darkshield' )      => 'api.telegram.org',
@@ -226,10 +231,12 @@ class DarkShield_Settings {
 				$this->render_quick_buttons( $messenger );
 				?>
 			</div>
+			</div>
 
 			<!-- International Payment -->
-			<p style="margin:10px 0 5px;font-size:12px;font-weight:600;color:#333;">💳 <?php esc_html_e( 'International Payment', 'darkshield' ); ?></p>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px;">
+			<div class="darkshield-quick-add-group">
+			<p>💳 <?php esc_html_e( 'International Payment', 'darkshield' ); ?></p>
+			<div class="darkshield-quick-add-buttons">
 				<?php
 				$intl_payment = array(
 					__( 'PayPal', 'darkshield' )        => "api.paypal.com\nwww.paypal.com\napi-m.paypal.com\napi-3t.paypal.com\nipnpb.paypal.com",
@@ -248,10 +255,12 @@ class DarkShield_Settings {
 				$this->render_quick_buttons( $intl_payment );
 				?>
 			</div>
+			</div>
 
 			<!-- Email Services -->
-			<p style="margin:10px 0 5px;font-size:12px;font-weight:600;color:#333;">📧 <?php esc_html_e( 'Email Services', 'darkshield' ); ?></p>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px;">
+			<div class="darkshield-quick-add-group">
+			<p>📧 <?php esc_html_e( 'Email Services', 'darkshield' ); ?></p>
+			<div class="darkshield-quick-add-buttons">
 				<?php
 				$email = array(
 					__( 'Mailchimp', 'darkshield' )  => "api.mailchimp.com\nus1.api.mailchimp.com",
@@ -265,10 +274,12 @@ class DarkShield_Settings {
 				$this->render_quick_buttons( $email );
 				?>
 			</div>
+			</div>
 
 			<!-- Other APIs -->
-			<p style="margin:10px 0 5px;font-size:12px;font-weight:600;color:#333;">🔌 <?php esc_html_e( 'Other APIs', 'darkshield' ); ?></p>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;">
+			<div class="darkshield-quick-add-group">
+			<p>🔌 <?php esc_html_e( 'Other APIs', 'darkshield' ); ?></p>
+			<div class="darkshield-quick-add-buttons">
 				<?php
 				$other = array(
 					__( 'Google APIs', 'darkshield' ) => "www.googleapis.com\nmaps.googleapis.com\ntranslate.googleapis.com\nfcm.googleapis.com",
@@ -281,6 +292,7 @@ class DarkShield_Settings {
 				);
 				$this->render_quick_buttons( $other );
 				?>
+			</div>
 			</div>
 		</div>
 

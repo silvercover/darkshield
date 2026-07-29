@@ -5,24 +5,138 @@
  * @since 1.0.0
  */
 
+.darkshield {
+	--ds-green: #00a32a;
+	--ds-yellow: #dba617;
+	--ds-red: #d63638;
+	--ds-blue: #2271b1;
+	--ds-text-muted: #646970;
+	--ds-border: #c3c4c7;
+	--ds-bg-subtle: #f6f7f7;
+	--ds-radius: 6px;
+	--ds-gap: 15px;
+}
+
 /* ========================================
    Nav Tabs
    ======================================== */
 
 .darkshield .nav-tab-wrapper {
-    margin-bottom: 0;
+	margin-bottom: 20px;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.darkshield .nav-tab {
+	transition: color 0.15s ease, background 0.15s ease;
 }
 
 /* ========================================
    Cards
    ======================================== */
 
+.darkshield .card,
 .darkshield-card {
-    background: #fff;
-    border: 1px solid #c3c4c7;
-    border-radius: 4px;
-    padding: 20px;
-    margin-bottom: 20px;
+	background: #fff;
+	border: 1px solid var(--ds-border);
+	border-radius: var(--ds-radius);
+	padding: 20px;
+	margin-bottom: var(--ds-gap);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.darkshield .card h2:first-child,
+.darkshield .card h3:first-child,
+.darkshield-card h2:first-child,
+.darkshield-card h3:first-child {
+	margin-top: 0;
+}
+
+/* ========================================
+   Layout helpers (replace repeated inline flex styles)
+   ======================================== */
+
+.darkshield-stats-row {
+	display: flex;
+	gap: var(--ds-gap);
+	flex-wrap: wrap;
+	margin-bottom: 20px;
+}
+
+.darkshield-actions-row {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-bottom: 15px;
+}
+
+.darkshield-filter-row {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	align-items: end;
+}
+
+.darkshield-filter-row label {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.darkshield-filter-row label span {
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--ds-text-muted);
+}
+
+.darkshield-inline-form {
+	display: inline-block;
+}
+
+/* ========================================
+   Mode Switch
+   ======================================== */
+
+.darkshield-mode-card {
+	border-inline-start: 4px solid var(--ds-border);
+}
+
+.darkshield-mode-switch {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin-top: 15px;
+}
+
+.darkshield-mode-switch .button {
+	border-width: 2px;
+	font-weight: 500;
+}
+
+.darkshield-mode-option {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 14px;
+	border: 1px solid #ddd;
+	border-radius: var(--ds-radius);
+	margin-bottom: 8px;
+	cursor: pointer;
+	transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.darkshield-mode-option:hover {
+	background: var(--ds-bg-subtle);
+}
+
+.darkshield-mode-option input[type="radio"] {
+	margin: 0;
+}
+
+.darkshield-mode-option.is-active {
+	font-weight: 700;
+	background: var(--ds-bg-subtle);
 }
 
 /* ========================================
@@ -30,13 +144,13 @@
    ======================================== */
 
 .darkshield-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: 600;
-    background: #f0f0f1;
-    color: #50575e;
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 600;
+	background: #f0f0f1;
+	color: #50575e;
 }
 
 .darkshield-badge-fonts     { background: #fef0f5; color: #b32d6b; }
@@ -55,34 +169,43 @@
 .darkshield-badge-iframe    { background: #fcf0f1; color: #d63638; }
 .darkshield-badge-css_inline { background: #fef0f5; color: #b32d6b; }
 
+.darkshield-pill {
+	display: inline-block;
+	margin: 3px 6px 3px 0;
+	padding: 4px 10px;
+	background: var(--ds-bg-subtle);
+	border-radius: 3px;
+	font-size: 12px;
+}
+
 /* ========================================
    Notices
    ======================================== */
 
 .darkshield-notice {
-    padding: 12px 15px;
-    border-radius: 4px;
-    border: 1px solid #c3c4c7;
+	padding: 12px 15px;
+	border-radius: 4px;
+	border: 1px solid var(--ds-border);
 }
 
 .darkshield-notice-success {
-    background: #edf7ed;
-    border-color: #00a32a;
+	background: #edf7ed;
+	border-color: var(--ds-green);
 }
 
 .darkshield-notice-warning {
-    background: #fff8e5;
-    border-color: #dba617;
+	background: #fff8e5;
+	border-color: var(--ds-yellow);
 }
 
 .darkshield-notice-error {
-    background: #fcf0f1;
-    border-color: #d63638;
+	background: #fcf0f1;
+	border-color: var(--ds-red);
 }
 
 .darkshield-notice-info {
-    background: #f0f6fc;
-    border-color: #2271b1;
+	background: #f0f6fc;
+	border-color: var(--ds-blue);
 }
 
 /* ========================================
@@ -90,20 +213,31 @@
    ======================================== */
 
 .darkshield-table {
-    width: 100%;
-    border-collapse: collapse;
+	width: 100%;
+	border-collapse: collapse;
 }
 
 .darkshield-table th,
 .darkshield-table td {
-    padding: 8px 10px;
-    text-align: left;
-    border-bottom: 1px solid #f0f0f1;
+	padding: 8px 10px;
+	text-align: start;
+	border-bottom: 1px solid #f0f0f1;
 }
 
 .darkshield-table th {
-    font-weight: 600;
-    color: #50575e;
+	font-weight: 600;
+	color: #50575e;
+}
+
+/* Horizontal scroll container so wide tables never break the layout on small screens */
+.darkshield-table-wrap {
+	width: 100%;
+	overflow-x: auto;
+	border-radius: var(--ds-radius);
+}
+
+.darkshield-table-wrap table {
+	margin: 0;
 }
 
 /* ========================================
@@ -111,21 +245,21 @@
    ======================================== */
 
 .darkshield-progress-wrap {
-    background: #f0f0f0;
-    border-radius: 3px;
-    overflow: hidden;
-    height: 24px;
+	background: #f0f0f0;
+	border-radius: 3px;
+	overflow: hidden;
+	height: 24px;
 }
 
 .darkshield-progress-bar {
-    background: #0073aa;
-    height: 24px;
-    width: 0%;
-    text-align: center;
-    color: #fff;
-    font-size: 12px;
-    line-height: 24px;
-    transition: width 0.3s ease;
+	background: #0073aa;
+	height: 24px;
+	width: 0%;
+	text-align: center;
+	color: #fff;
+	font-size: 12px;
+	line-height: 24px;
+	transition: width 0.3s ease;
 }
 
 /* ========================================
@@ -133,24 +267,28 @@
    ======================================== */
 
 .darkshield-stat-card {
-    flex: 1;
-    min-width: 120px;
-    padding: 15px;
-    background: #fff;
-    border: 1px solid #c3c4c7;
-    border-radius: 4px;
+	flex: 1;
+	min-width: 120px;
+	padding: 15px;
+	background: #fff;
+	border: 1px solid var(--ds-border);
+	border-radius: var(--ds-radius);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .darkshield-stat-card h3 {
-    margin: 0 0 5px;
-    font-size: 12px;
-    color: #666;
+	margin: 0 0 5px;
+	font-size: 12px;
+	color: var(--ds-text-muted);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
 }
 
 .darkshield-stat-card p {
-    margin: 0;
-    font-size: 22px;
-    font-weight: bold;
+	margin: 0;
+	font-size: 22px;
+	font-weight: bold;
 }
 
 /* ========================================
@@ -158,54 +296,75 @@
    ======================================== */
 
 .darkshield-waterfall {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 4px;
-    border: 1px solid #e0e0e0;
+	background: #f9f9f9;
+	padding: 15px;
+	border-radius: var(--ds-radius);
+	border: 1px solid #e0e0e0;
+	overflow-x: auto;
 }
 
 .darkshield-waterfall-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 4px;
-    font-size: 11px;
+	display: flex;
+	align-items: center;
+	margin-bottom: 4px;
+	font-size: 11px;
 }
 
 .darkshield-waterfall-label {
-    width: 250px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding-right: 10px;
+	width: 250px;
+	flex-shrink: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding-inline-end: 10px;
 }
 
 .darkshield-waterfall-bar {
-    flex: 1;
-    display: flex;
-    height: 16px;
-    border-radius: 2px;
-    overflow: hidden;
-    background: #e8e8e8;
+	flex: 1;
+	display: flex;
+	height: 16px;
+	border-radius: 2px;
+	overflow: hidden;
+	background: #e8e8e8;
+	min-width: 120px;
 }
 
 .darkshield-waterfall-time {
-    width: 65px;
-    text-align: right;
-    padding-left: 8px;
-    font-weight: bold;
+	width: 65px;
+	flex-shrink: 0;
+	text-align: end;
+	padding-inline-start: 8px;
+	font-weight: bold;
 }
 
 /* ========================================
    Quick Add Buttons
    ======================================== */
 
-.darkshield-quick-add {
-    transition: all 0.2s ease;
+.darkshield-quick-add-group {
+	margin-bottom: 15px;
 }
 
-.darkshield-quick-add:hover {
-    border-color: #0073aa;
-    color: #0073aa;
+.darkshield-quick-add-group > p {
+	margin: 10px 0 5px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #333;
+}
+
+.darkshield-quick-add-buttons {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.darkshield-quick-add {
+	transition: all 0.2s ease;
+}
+
+.darkshield-quick-add:hover:not(:disabled) {
+	border-color: #0073aa;
+	color: #0073aa;
 }
 
 /* ========================================
@@ -213,7 +372,20 @@
    ======================================== */
 
 #wpadminbar .darkshield-admin-bar .ab-item {
-    font-weight: 600;
+	font-weight: 600;
+}
+
+/* ========================================
+   RTL support (Persian admin locales)
+   ======================================== */
+
+.rtl .darkshield-mode-card {
+	border-inline-start: 4px solid var(--ds-border);
+	border-inline-end: 0;
+}
+
+.rtl .darkshield-waterfall-time {
+	text-align: start;
 }
 
 /* ========================================
@@ -221,15 +393,28 @@
    ======================================== */
 
 @media screen and (max-width: 782px) {
-    .darkshield-waterfall-label {
-        width: 120px;
-    }
+	.darkshield-waterfall-label {
+		width: 120px;
+	}
 
-    .darkshield-stat-card {
-        min-width: 100px;
-    }
+	.darkshield-stat-card {
+		min-width: 100px;
+	}
 
-    .darkshield-stat-card p {
-        font-size: 18px;
-    }
+	.darkshield-stat-card p {
+		font-size: 18px;
+	}
+
+	.darkshield-mode-switch {
+		flex-direction: column;
+	}
+
+	.darkshield-mode-switch .button {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.darkshield-filter-row {
+		align-items: stretch;
+	}
 }

@@ -14,6 +14,7 @@ if ( empty( $results ) ) {
 	return;
 }
 ?>
+<div class="darkshield-table-wrap">
 <table class="widefat striped">
 	<thead>
 		<tr>
@@ -44,6 +45,7 @@ if ( empty( $results ) ) {
 		<?php endforeach; ?>
 	</tbody>
 </table>
+</div>
 <p style="color:#666;font-size:12px;margin-top:10px;">
 	<?php
 	/* translators: %d: number of scan results displayed */

@@ -58,24 +58,24 @@ if ( $search ) {
 $services = DarkShield_Utils::get_allowed_services();
 ?>
 
-<div class="wrap">
+<div class="wrap darkshield">
 	<h1>🛡️ <?php esc_html_e( 'DarkShield — Whitelist', 'darkshield' ); ?></h1>
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
-	<div style="margin-top:20px;">
+	<div>
 
 		<!-- Stats -->
-		<div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:20px;">
-			<div class="card" style="flex:1;min-width:140px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Whitelisted', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;color:#2271b1;"><?php echo esc_html( count( $whitelist ) ); ?></p>
+		<div class="darkshield-stats-row">
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Whitelisted', 'darkshield' ); ?></h3>
+				<p style="color:#2271b1;"><?php echo esc_html( count( $whitelist ) ); ?></p>
 			</div>
-			<div class="card" style="flex:1;min-width:140px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Services', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;color:#00a32a;"><?php echo esc_html( count( $services ) ); ?></p>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Services', 'darkshield' ); ?></h3>
+				<p style="color:#00a32a;"><?php echo esc_html( count( $services ) ); ?></p>
 			</div>
-			<div class="card" style="flex:1;min-width:140px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Mode', 'darkshield' ); ?></h3>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Mode', 'darkshield' ); ?></h3>
 				<?php
 				$mi   = array(
 					'normal'   => '🟢',
@@ -84,13 +84,13 @@ $services = DarkShield_Utils::get_allowed_services();
 				);
 				$mode = DarkShield_Utils::get_mode();
 				?>
-				<p style="margin:0;font-size:22px;font-weight:bold;"><?php echo esc_html( ( isset( $mi[ $mode ] ) ? $mi[ $mode ] . ' ' : '' ) . DarkShield_Utils::get_mode_label() ); ?></p>
+				<p><?php echo esc_html( ( isset( $mi[ $mode ] ) ? $mi[ $mode ] . ' ' : '' ) . DarkShield_Utils::get_mode_label() ); ?></p>
 			</div>
 		</div>
 
 		<!-- Add Domain -->
-		<div class="card" style="max-width:100%;padding:20px;margin-bottom:20px;">
-			<h2 style="margin-top:0;"><?php esc_html_e( 'Add Domain', 'darkshield' ); ?></h2>
+		<div class="card">
+			<h2><?php esc_html_e( 'Add Domain', 'darkshield' ); ?></h2>
 			<p><?php esc_html_e( 'Whitelisted domains are never blocked, regardless of mode.', 'darkshield' ); ?></p>
 			<form method="post" style="display:flex;gap:10px;">
 				<?php wp_nonce_field( 'darkshield_whitelist_action' ); ?>
@@ -100,8 +100,8 @@ $services = DarkShield_Utils::get_allowed_services();
 		</div>
 
 		<!-- Bulk Import -->
-		<div class="card" style="max-width:100%;padding:20px;margin-bottom:20px;">
-			<h2 style="margin-top:0;"><?php esc_html_e( 'Bulk Import', 'darkshield' ); ?></h2>
+		<div class="card">
+			<h2><?php esc_html_e( 'Bulk Import', 'darkshield' ); ?></h2>
 			<form method="post">
 				<?php wp_nonce_field( 'darkshield_whitelist_action' ); ?>
 				<textarea name="import_domains" rows="4" class="large-text code" placeholder="domain1.com&#10;domain2.com"></textarea>
@@ -112,12 +112,12 @@ $services = DarkShield_Utils::get_allowed_services();
 		</div>
 
 		<!-- Actions -->
-		<div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-whitelist' ) ); ?>">
+		<div class="darkshield-actions-row">
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-whitelist' ) ); ?>" class="darkshield-inline-form">
 				<?php wp_nonce_field( 'darkshield_whitelist_action' ); ?>
 				<button type="submit" name="darkshield_export_whitelist" value="1" class="button"><?php esc_html_e( 'Export', 'darkshield' ); ?></button>
 			</form>
-			<form method="post">
+			<form method="post" class="darkshield-inline-form">
 				<?php wp_nonce_field( 'darkshield_whitelist_action' ); ?>
 				<button type="submit" name="darkshield_clear_whitelist" value="1" class="button" style="color:#a00;"
 					onclick="return confirm('<?php esc_attr_e( 'Clear entire whitelist?', 'darkshield' ); ?>');">
@@ -142,6 +142,7 @@ $services = DarkShield_Utils::get_allowed_services();
 
 		<!-- Whitelist Table -->
 		<?php if ( ! empty( $filtered ) ) : ?>
+			<div class="darkshield-table-wrap">
 			<table class="widefat striped">
 				<thead>
 					<tr>
@@ -188,6 +189,7 @@ $services = DarkShield_Utils::get_allowed_services();
 					<?php endforeach; ?>
 				</tbody>
 			</table>
+			</div>
 
 			<?php if ( $search ) : ?>
 				<p style="margin-top:10px;color:#666;">

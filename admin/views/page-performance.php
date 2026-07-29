@@ -9,15 +9,15 @@ $latest_key   = get_transient( 'darkshield_front_perf_latest' );
 $has_frontend = ! empty( $latest_key ) && get_transient( $latest_key );
 ?>
 
-<div class="wrap">
+<div class="wrap darkshield">
 	<h1>🛡️ <?php esc_html_e( 'DarkShield — Performance Analyzer', 'darkshield' ); ?></h1>
 
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
-	<div style="margin-top:20px;">
+	<div>
 
 		<!-- Sub Tabs -->
-		<div style="margin-bottom:20px;">
+		<div class="darkshield-actions-row">
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-performance&tab=server' ) ); ?>"
 				class="button <?php echo 'server' === $tab ? 'button-primary' : ''; ?>">
 				📡 <?php esc_html_e( 'Server-Side', 'darkshield' ); ?>
@@ -39,8 +39,8 @@ $has_frontend = ! empty( $latest_key ) && get_transient( $latest_key );
 		<?php if ( 'server' === $tab ) : ?>
 
 			<!-- Server-Side Analysis -->
-			<div class="card" style="max-width:100%;padding:20px;margin-bottom:20px;">
-				<h2 style="margin-top:0;">📡 <?php esc_html_e( 'Server-Side Analysis', 'darkshield' ); ?></h2>
+			<div class="card">
+				<h2>📡 <?php esc_html_e( 'Server-Side Analysis', 'darkshield' ); ?></h2>
 				<p><?php esc_html_e( 'Fetches page HTML from server, extracts resources, pings each one.', 'darkshield' ); ?></p>
 				<div style="display:flex;gap:10px;align-items:center;margin-top:15px;">
 					<input type="url" id="darkshield-perf-url" value="<?php echo esc_attr( home_url( '/' ) ); ?>" class="regular-text" />
@@ -53,11 +53,11 @@ $has_frontend = ! empty( $latest_key ) && get_transient( $latest_key );
 		<?php elseif ( 'frontend' === $tab ) : ?>
 
 			<!-- Frontend Client-Side Results -->
-			<div class="card" style="max-width:100%;padding:20px;margin-bottom:20px;">
-				<h2 style="margin-top:0;">🌐 <?php esc_html_e( 'Frontend Performance Data', 'darkshield' ); ?></h2>
+			<div class="card">
+				<h2>🌐 <?php esc_html_e( 'Frontend Performance Data', 'darkshield' ); ?></h2>
 				<p><?php esc_html_e( 'Real browser timing data collected from your site\'s frontend pages.', 'darkshield' ); ?></p>
 
-				<div style="background:#f0f6fc;padding:15px;border-radius:4px;border:1px solid #c3c4c7;margin-top:15px;">
+				<div class="darkshield-notice darkshield-notice-info" style="margin-top:15px;">
 					<h3 style="margin-top:0;">📋 <?php esc_html_e( 'How to collect data:', 'darkshield' ); ?></h3>
 					<ol style="margin:10px 0 0 20px;line-height:2;">
 						<li><?php esc_html_e( 'Go to any frontend page of your site (homepage, product page, etc.)', 'darkshield' ); ?></li>
@@ -68,7 +68,7 @@ $has_frontend = ! empty( $latest_key ) && get_transient( $latest_key );
 				</div>
 
 				<?php if ( $has_frontend ) : ?>
-					<div style="margin-top:15px;padding:10px 15px;background:#edf7ed;border:1px solid #00a32a;border-radius:4px;">
+					<div class="darkshield-notice darkshield-notice-success" style="margin-top:15px;">
 						<strong>✅ <?php esc_html_e( 'Data available!', 'darkshield' ); ?></strong>
 						<?php if ( $latest_url ) : ?>
 							<br><span style="color:#666;font-size:13px;">
@@ -95,8 +95,8 @@ $has_frontend = ! empty( $latest_key ) && get_transient( $latest_key );
 		<?php elseif ( 'admin' === $tab ) : ?>
 
 			<!-- Admin Page Client-Side -->
-			<div class="card" style="max-width:100%;padding:20px;margin-bottom:20px;">
-				<h2 style="margin-top:0;">⚙️ <?php esc_html_e( 'Admin Page Analysis', 'darkshield' ); ?></h2>
+			<div class="card">
+				<h2>⚙️ <?php esc_html_e( 'Admin Page Analysis', 'darkshield' ); ?></h2>
 				<p><?php esc_html_e( 'Collect Resource Timing data for this admin page.', 'darkshield' ); ?></p>
 				<button type="button" id="darkshield-perf-client" class="button button-primary"><?php esc_html_e( 'Collect Browser Data', 'darkshield' ); ?></button>
 			</div>

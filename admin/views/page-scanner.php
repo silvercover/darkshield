@@ -3,15 +3,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<div class="wrap">
+<div class="wrap darkshield">
 	<h1>🛡️ <?php esc_html_e( 'DarkShield — Scanner', 'darkshield' ); ?></h1>
 
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
-	<div style="margin-top:20px;">
+	<div>
 
-		<div class="card" style="max-width:100%;padding:20px;margin-bottom:20px;">
-			<h2 style="margin-top:0;"><?php esc_html_e( 'Scan for External URLs', 'darkshield' ); ?></h2>
+		<div class="card">
+			<h2><?php esc_html_e( 'Scan for External URLs', 'darkshield' ); ?></h2>
 			<p><?php esc_html_e( 'Scan theme, plugin, and core files or database for external URLs.', 'darkshield' ); ?></p>
 
 			<p>
