@@ -20,9 +20,9 @@ class DarkShield_Block_Emoji {
 	 */
 	public function register() {
 
-		// Remove the emoji detection script from wp_head and admin_head.
+		// Remove the emoji detection script from wp_head and wp-admin.
 		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
-		remove_action( 'admin_head', 'print_emoji_detection_script', 7 );
+		remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
 
 		// Remove inline emoji styles.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
