@@ -2,15 +2,17 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+$darkshield_page_title    = __( 'About', 'darkshield' );
+$darkshield_page_subtitle = __( 'Version, features, and system information at a glance.', 'darkshield' );
 ?>
 <div class="wrap darkshield">
-	<h1>🛡️ <?php esc_html_e( 'DarkShield — About', 'darkshield' ); ?></h1>
+	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-page-header.php'; ?>
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
 	<div>
 
-		<div class="card" style="max-width:800px;padding:30px;">
-			<h2>🛡️ DarkShield v<?php echo esc_html( DARKSHIELD_VERSION ); ?></h2>
+		<div class="card" style="max-width:800px;">
+			<h2 class="darkshield-card-title">DarkShield v<?php echo esc_html( DARKSHIELD_VERSION ); ?></h2>
 			<p style="font-size:15px;"><?php esc_html_e( 'Block external requests, protect privacy, and improve performance.', 'darkshield' ); ?></p>
 
 			<hr>

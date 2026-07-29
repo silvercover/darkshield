@@ -56,10 +56,13 @@ if ( $search ) {
 }
 
 $services = DarkShield_Utils::get_allowed_services();
+
+$darkshield_page_title    = __( 'Whitelist', 'darkshield' );
+$darkshield_page_subtitle = __( 'Domains that bypass blocking no matter which mode is active.', 'darkshield' );
 ?>
 
 <div class="wrap darkshield">
-	<h1>🛡️ <?php esc_html_e( 'DarkShield — Whitelist', 'darkshield' ); ?></h1>
+	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-page-header.php'; ?>
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
 	<div>
@@ -68,11 +71,11 @@ $services = DarkShield_Utils::get_allowed_services();
 		<div class="darkshield-stats-row">
 			<div class="darkshield-stat-card">
 				<h3><?php esc_html_e( 'Whitelisted', 'darkshield' ); ?></h3>
-				<p style="color:#2271b1;"><?php echo esc_html( count( $whitelist ) ); ?></p>
+				<p style="--ds-stat-color:#0284c7;"><?php echo esc_html( count( $whitelist ) ); ?></p>
 			</div>
 			<div class="darkshield-stat-card">
 				<h3><?php esc_html_e( 'Services', 'darkshield' ); ?></h3>
-				<p style="color:#00a32a;"><?php echo esc_html( count( $services ) ); ?></p>
+				<p style="--ds-stat-color:#16a34a;"><?php echo esc_html( count( $services ) ); ?></p>
 			</div>
 			<div class="darkshield-stat-card">
 				<h3><?php esc_html_e( 'Mode', 'darkshield' ); ?></h3>
@@ -163,14 +166,14 @@ $services = DarkShield_Utils::get_allowed_services();
 							<td><code><?php echo esc_html( $domain ); ?></code></td>
 							<td>
 								<?php if ( DarkShield_Utils::is_iranian_domain( $domain ) ) : ?>
-									<span style="color:#00a32a;">✓ <?php esc_html_e( 'Yes', 'darkshield' ); ?></span>
+									<span style="color:#16a34a;">✓ <?php esc_html_e( 'Yes', 'darkshield' ); ?></span>
 								<?php else : ?>
 									<span style="color:#999;">✗ <?php esc_html_e( 'No', 'darkshield' ); ?></span>
 								<?php endif; ?>
 							</td>
 							<td>
 								<?php if ( DarkShield_Utils::is_allowed_service( $domain ) ) : ?>
-									<span style="color:#2271b1;">✓</span>
+									<span style="color:#0284c7;">✓</span>
 								<?php else : ?>
 									<span style="color:#999;">—</span>
 								<?php endif; ?>

@@ -9,32 +9,39 @@ $latest_key   = get_transient( 'darkshield_front_perf_latest' );
 $has_frontend = ! empty( $latest_key ) && get_transient( $latest_key );
 ?>
 
+<?php
+$darkshield_page_title    = __( 'Performance Analyzer', 'darkshield' );
+$darkshield_page_subtitle = __( 'Measure real load times across your server, frontend, and admin.', 'darkshield' );
+?>
 <div class="wrap darkshield">
-	<h1>🛡️ <?php esc_html_e( 'DarkShield — Performance Analyzer', 'darkshield' ); ?></h1>
+	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-page-header.php'; ?>
 
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
 	<div>
 
 		<!-- Sub Tabs -->
-		<div class="darkshield-actions-row">
+		<nav class="darkshield-nav" aria-label="<?php esc_attr_e( 'Performance views', 'darkshield' ); ?>">
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-performance&tab=server' ) ); ?>"
-				class="button <?php echo 'server' === $tab ? 'button-primary' : ''; ?>">
-				📡 <?php esc_html_e( 'Server-Side', 'darkshield' ); ?>
+				class="darkshield-nav-item <?php echo 'server' === $tab ? 'is-active' : ''; ?>">
+				<span class="darkshield-nav-icon" aria-hidden="true">📡</span>
+				<span class="darkshield-nav-label"><?php esc_html_e( 'Server-Side', 'darkshield' ); ?></span>
 			</a>
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-performance&tab=frontend' ) ); ?>"
-				class="button <?php echo 'frontend' === $tab ? 'button-primary' : ''; ?>"
+				class="darkshield-nav-item <?php echo 'frontend' === $tab ? 'is-active' : ''; ?>"
 				style="position:relative;">
-				🌐 <?php esc_html_e( 'Frontend (Client)', 'darkshield' ); ?>
+				<span class="darkshield-nav-icon" aria-hidden="true">🌐</span>
+				<span class="darkshield-nav-label"><?php esc_html_e( 'Frontend (Client)', 'darkshield' ); ?></span>
 				<?php if ( $has_frontend ) : ?>
-					<span style="position:absolute;top:-5px;right:-5px;background:#00a32a;color:#fff;border-radius:50%;width:12px;height:12px;font-size:8px;line-height:12px;text-align:center;">✓</span>
+					<span style="position:absolute;top:-4px;right:-4px;background:#16a34a;color:#fff;border-radius:50%;width:10px;height:10px;font-size:7px;line-height:10px;text-align:center;">✓</span>
 				<?php endif; ?>
 			</a>
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-performance&tab=admin' ) ); ?>"
-				class="button <?php echo 'admin' === $tab ? 'button-primary' : ''; ?>">
-				⚙️ <?php esc_html_e( 'Admin Page', 'darkshield' ); ?>
+				class="darkshield-nav-item <?php echo 'admin' === $tab ? 'is-active' : ''; ?>">
+				<span class="darkshield-nav-icon" aria-hidden="true">⚙️</span>
+				<span class="darkshield-nav-label"><?php esc_html_e( 'Admin Page', 'darkshield' ); ?></span>
 			</a>
-		</div>
+		</nav>
 
 		<?php if ( 'server' === $tab ) : ?>
 

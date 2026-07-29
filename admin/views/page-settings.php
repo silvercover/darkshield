@@ -2,9 +2,11 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+$darkshield_page_title    = __( 'Settings', 'darkshield' );
+$darkshield_page_subtitle = __( 'Choose a shield mode and fine-tune every blocker.', 'darkshield' );
 ?>
 <div class="wrap darkshield">
-	<h1>🛡️ <?php esc_html_e( 'DarkShield — Settings', 'darkshield' ); ?></h1>
+	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-page-header.php'; ?>
 
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 

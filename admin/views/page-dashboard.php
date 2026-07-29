@@ -19,9 +19,9 @@ if (
 }
 
 $mode_info = array(
-	'normal'   => array( '🟢', '#00a32a', __( 'Normal — All requests allowed', 'darkshield' ) ),
-	'national' => array( '🟡', '#dba617', __( 'National — Only Iranian domains allowed', 'darkshield' ) ),
-	'offline'  => array( '🔴', '#d63638', __( 'Offline — All external blocked', 'darkshield' ) ),
+	'normal'   => array( '🟢', '#16a34a', __( 'Normal', 'darkshield' ), __( 'All requests allowed', 'darkshield' ) ),
+	'national' => array( '🟡', '#d97706', __( 'National', 'darkshield' ), __( 'Only Iranian domains allowed', 'darkshield' ) ),
+	'offline'  => array( '🔴', '#dc2626', __( 'Offline', 'darkshield' ), __( 'All external requests blocked', 'darkshield' ) ),
 );
 $mi        = isset( $mode_info[ $mode ] ) ? $mode_info[ $mode ] : $mode_info['normal'];
 
@@ -71,27 +71,36 @@ function darkshield_has_jalali() {
 }
 ?>
 
+<?php
+$darkshield_page_title    = __( 'Dashboard', 'darkshield' );
+$darkshield_page_subtitle = __( 'Privacy shield, performance analyzer, and traffic control for your site.', 'darkshield' );
+?>
 <div class="wrap darkshield">
-	<h1>🛡️ <?php esc_html_e( 'DarkShield — Dashboard', 'darkshield' ); ?></h1>
+	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-page-header.php'; ?>
 
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
 	<div>
 
 		<!-- Current Mode -->
-		<div class="card darkshield-mode-card" style="border-color:<?php echo esc_attr( $mi[1] ); ?>;">
-			<h2><?php echo esc_html( $mi[0] . ' ' . __( 'Current Mode:', 'darkshield' ) . ' ' . DarkShield_Utils::get_mode_label() ); ?></h2>
-			<p><?php echo esc_html( $mi[2] ); ?></p>
+		<div class="darkshield-mode-banner" style="--ds-mode-color:<?php echo esc_attr( $mi[1] ); ?>;">
+			<h2 class="darkshield-card-title"><?php echo esc_html( $mi[0] ); ?> <?php esc_html_e( 'Current Mode:', 'darkshield' ); ?> <?php echo esc_html( $mi[2] ); ?></h2>
+			<p class="darkshield-card-subtitle"><?php echo esc_html( $mi[3] ); ?></p>
 
-			<form method="post" class="darkshield-mode-switch">
+			<form method="post" class="darkshield-mode-grid">
 				<?php wp_nonce_field( 'darkshield_switch_mode' ); ?>
 				<?php foreach ( $mode_info as $key => $info ) : ?>
-					<?php if ( $key !== $mode ) : ?>
-						<button type="submit" name="darkshield_switch_mode" value="<?php echo esc_attr( $key ); ?>"
-							class="button" style="border-color:<?php echo esc_attr( $info[1] ); ?>;">
-							<?php echo esc_html( $info[0] . ' ' . DarkShield_Utils::get_mode_label( $key ) ); ?>
-						</button>
-					<?php endif; ?>
+					<?php $is_active = ( $key === $mode ); ?>
+					<button type="<?php echo $is_active ? 'button' : 'submit'; ?>"
+						<?php echo $is_active ? '' : 'name="darkshield_switch_mode" value="' . esc_attr( $key ) . '"'; ?>
+						class="darkshield-mode-card <?php echo $is_active ? 'is-active' : ''; ?>"
+						style="--ds-mode-color:<?php echo esc_attr( $info[1] ); ?>;">
+						<span class="darkshield-mode-card-icon"><?php echo esc_html( $info[0] ); ?></span>
+						<span class="darkshield-mode-card-body">
+							<span class="darkshield-mode-card-title"><?php echo esc_html( $info[2] ); ?></span>
+							<span class="darkshield-mode-card-desc"><?php echo esc_html( $info[3] ); ?></span>
+						</span>
+					</button>
 				<?php endforeach; ?>
 			</form>
 		</div>
@@ -104,11 +113,11 @@ function darkshield_has_jalali() {
 			</div>
 			<div class="darkshield-stat-card">
 				<h3><?php esc_html_e( 'Blocked', 'darkshield' ); ?></h3>
-				<p style="color:#d63638;"><?php echo esc_html( number_format_i18n( $log_blocked ) ); ?></p>
+				<p style="--ds-stat-color:#dc2626;"><?php echo esc_html( number_format_i18n( $log_blocked ) ); ?></p>
 			</div>
 			<div class="darkshield-stat-card">
 				<h3><?php esc_html_e( 'Scan Results', 'darkshield' ); ?></h3>
-				<p style="color:#2271b1;"><?php echo esc_html( number_format_i18n( $scan_total ) ); ?></p>
+				<p style="--ds-stat-color:#0284c7;"><?php echo esc_html( number_format_i18n( $scan_total ) ); ?></p>
 			</div>
 			<div class="darkshield-stat-card">
 				<h3><?php esc_html_e( 'Whitelist', 'darkshield' ); ?></h3>
@@ -116,7 +125,7 @@ function darkshield_has_jalali() {
 			</div>
 			<div class="darkshield-stat-card">
 				<h3><?php esc_html_e( 'Services', 'darkshield' ); ?></h3>
-				<p style="color:#00a32a;"><?php echo esc_html( $svc_count ); ?></p>
+				<p style="--ds-stat-color:#16a34a;"><?php echo esc_html( $svc_count ); ?></p>
 			</div>
 		</div>
 

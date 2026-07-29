@@ -91,8 +91,12 @@ $tp = ceil( $total / max( $pp, 1 ) );
 $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 ?>
 
+<?php
+$darkshield_page_title    = __( 'Log', 'darkshield' );
+$darkshield_page_subtitle = __( 'Every allowed and blocked request, filterable and exportable.', 'darkshield' );
+?>
 <div class="wrap darkshield">
-	<h1>🛡️ <?php esc_html_e( 'DarkShield — Log', 'darkshield' ); ?></h1>
+	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-page-header.php'; ?>
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
 	<div>
@@ -105,15 +109,15 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 			</div>
 			<div class="darkshield-stat-card">
 				<h3><?php esc_html_e( 'Blocked', 'darkshield' ); ?></h3>
-				<p style="color:#d63638;"><?php echo esc_html( number_format_i18n( $sb ) ); ?></p>
+				<p style="--ds-stat-color:#dc2626;"><?php echo esc_html( number_format_i18n( $sb ) ); ?></p>
 			</div>
 			<div class="darkshield-stat-card">
 				<h3><?php esc_html_e( 'Allowed', 'darkshield' ); ?></h3>
-				<p style="color:#00a32a;"><?php echo esc_html( number_format_i18n( $sa ) ); ?></p>
+				<p style="--ds-stat-color:#16a34a;"><?php echo esc_html( number_format_i18n( $sa ) ); ?></p>
 			</div>
 			<div class="darkshield-stat-card">
 				<h3><?php echo $hf ? esc_html__( 'Filtered', 'darkshield' ) : esc_html__( 'Showing', 'darkshield' ); ?></h3>
-				<p style="color:#2271b1;"><?php echo esc_html( number_format_i18n( $total ) ); ?></p>
+				<p style="--ds-stat-color:#0284c7;"><?php echo esc_html( number_format_i18n( $total ) ); ?></p>
 			</div>
 		</div>
 
@@ -249,10 +253,10 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 							<td>
 								<code><?php echo esc_html( $log->domain ); ?></code>
 								<?php if ( DarkShield_Utils::is_whitelisted( $log->domain ) ) : ?>
-									<br><small style="color:#2271b1;"><?php esc_html_e( 'whitelisted', 'darkshield' ); ?></small>
+									<br><small style="color:#0284c7;"><?php esc_html_e( 'whitelisted', 'darkshield' ); ?></small>
 								<?php endif; ?>
 								<?php if ( DarkShield_Utils::is_allowed_service( $log->domain ) ) : ?>
-									<br><small style="color:#00a32a;"><?php esc_html_e( 'service', 'darkshield' ); ?></small>
+									<br><small style="color:#16a34a;"><?php esc_html_e( 'service', 'darkshield' ); ?></small>
 								<?php endif; ?>
 							</td>
 							<td><span class="darkshield-badge"><?php echo esc_html( ucfirst( $log->type ) ); ?></span></td>
@@ -355,9 +359,9 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 					<span><strong><?php esc_html_e( 'Logging:', 'darkshield' ); ?></strong>
 						<?php
 						if ( DarkShield_Utils::get_setting( 'log_enabled', 1 ) ) {
-							echo '<span style="color:#00a32a;">' . esc_html__( 'Enabled', 'darkshield' ) . '</span>';
+							echo '<span style="color:#16a34a;">' . esc_html__( 'Enabled', 'darkshield' ) . '</span>';
 						} else {
-							echo '<span style="color:#d63638;">' . esc_html__( 'Disabled', 'darkshield' ) . '</span>';
+							echo '<span style="color:#dc2626;">' . esc_html__( 'Disabled', 'darkshield' ) . '</span>';
 						}
 						?>
 					</span>

@@ -129,23 +129,32 @@ class DarkShield_Settings {
 	public function render_mode() {
 		$mode  = DarkShield_Utils::get_mode();
 		$modes = array(
-			'normal'   => array( '🟢', __( 'Normal — All requests allowed', 'darkshield' ), '#00a32a' ),
-			'national' => array( '🟡', __( 'National — Only Iranian domains allowed', 'darkshield' ), '#dba617' ),
-			'offline'  => array( '🔴', __( 'Offline — All external blocked', 'darkshield' ), '#d63638' ),
+			'normal'   => array( '🟢', __( 'Normal', 'darkshield' ), __( 'All requests allowed', 'darkshield' ), '#16a34a' ),
+			'national' => array( '🟡', __( 'National', 'darkshield' ), __( 'Only Iranian domains allowed', 'darkshield' ), '#d97706' ),
+			'offline'  => array( '🔴', __( 'Offline', 'darkshield' ), __( 'All external requests blocked', 'darkshield' ), '#dc2626' ),
 		);
+		echo '<div class="darkshield-mode-grid">';
 		foreach ( $modes as $key => $m ) {
 			$active = ( $mode === $key );
-			$style  = $active ? 'color:' . $m[2] . ';' : '';
 			printf(
-				'<label class="darkshield-mode-option%s" style="%s"><input type="radio" name="darkshield_settings[mode]" value="%s" %s /> %s %s</label>',
+				'<label class="darkshield-mode-card%s" style="--ds-mode-color:%s;">
+					<input type="radio" name="darkshield_settings[mode]" value="%s" %s />
+					<span class="darkshield-mode-card-icon">%s</span>
+					<span class="darkshield-mode-card-body">
+						<span class="darkshield-mode-card-title">%s</span>
+						<span class="darkshield-mode-card-desc">%s</span>
+					</span>
+				</label>',
 				$active ? ' is-active' : '',
-				esc_attr( $style ),
+				esc_attr( $m[3] ),
 				esc_attr( $key ),
 				checked( $mode, $key, false ),
 				esc_html( $m[0] ),
-				esc_html( $m[1] )
+				esc_html( $m[1] ),
+				esc_html( $m[2] )
 			);
 		}
+		echo '</div>';
 	}
 
 	public function render_checkbox( $args ) {
