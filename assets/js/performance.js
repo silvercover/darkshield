@@ -103,7 +103,7 @@
             h += '<div id="perf-bar" style="background:#0073aa;height:24px;width:0%;text-align:center;color:#fff;font-size:12px;line-height:24px;transition:width 0.3s;">0%</div>';
             h += '</div><p id="perf-text" style="margin:5px 0 0;font-size:12px;color:#666;"></p></div>';
             h += '<p><strong>' + data.total + ' resources</strong> | HTML: ' + DarkShield.formatBytes(data.html_size) + '</p>';
-            h += '<table class="widefat striped"><thead><tr><th>#</th><th>URL</th><th>Type</th><th>Domain</th><th>Time</th><th>Status</th><th>Size</th><th>Cache</th><th>Rating</th></tr></thead><tbody>';
+            h += '<div class="darkshield-table-wrap"><table class="widefat striped"><thead><tr><th>#</th><th>URL</th><th>Type</th><th>Domain</th><th>Time</th><th>Status</th><th>Size</th><th>Cache</th><th>Rating</th></tr></thead><tbody>';
             for (var i = 0; i < data.resources.length; i++) {
                 var r = data.resources[i], dom = this.domain(r.url);
                 h += '<tr id="perf-row-' + i + '"><td>' + (i + 1) + '</td>';
@@ -113,7 +113,7 @@
                 h += '<td class="p-time">—</td><td class="p-status"><span style="color:#999;">⏳</span></td>';
                 h += '<td class="p-size">—</td><td class="p-cache">—</td><td class="p-rating">—</td></tr>';
             }
-            h += '</tbody></table>';
+            h += '</tbody></table></div>';
             $('#darkshield-perf-results').html(h);
         },
 
@@ -150,7 +150,7 @@
                 var st = $(this).find('.p-status').text();
                 if (st.indexOf('Blocked') !== -1 || st.indexOf('Error') !== -1) err++;
             });
-            var sh = '<div style="display:flex;gap:15px;flex-wrap:wrap;margin:15px 0;">';
+            var sh = '<div class="darkshield-stats-row" style="margin:15px 0;">';
             sh += this.card('Total', this.total, '') + this.card('🟢 Fast', fast, '#00a32a');
             sh += this.card('🟡 Medium', med, '#dba617') + this.card('🔴 Slow', slow, '#d63638');
             sh += this.card('❌ Error', err, err > 0 ? '#d63638' : '#00a32a') + '</div>';
@@ -220,7 +220,7 @@
                         info += '<span><strong>Resources:</strong> ' + entries.length + '</span></div>';
                         if (meta.page_timing && meta.page_timing.load_event) {
                             var pt = meta.page_timing;
-                            info += '<div style="display:flex;gap:15px;flex-wrap:wrap;margin-top:15px;">';
+                            info += '<div class="darkshield-stats-row" style="margin-top:15px;">';
                             info += self.card('DNS', pt.dns + 'ms', pt.dns > 100 ? '#d63638' : '#00a32a');
                             info += self.card('TTFB', pt.ttfb + 'ms', pt.ttfb > 500 ? '#d63638' : '#00a32a');
                             info += self.card('DOM Interactive', pt.dom_interactive + 'ms', pt.dom_interactive > 3000 ? '#d63638' : '#dba617');
@@ -262,7 +262,7 @@
             var h = '';
 
             // Summary cards
-            h += '<div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:20px;">';
+            h += '<div class="darkshield-stats-row">';
             h += this.card('Resources', data.length, '');
             h += this.card('Total Size', DarkShield.formatBytes(totalSize), '#2271b1');
             h += this.card('Slow (>1s)', slowCount, slowCount > 0 ? '#d63638' : '#00a32a');
@@ -285,7 +285,7 @@
 
             // Resource table
             h += '<h3>📋 Resource Details (sorted by duration)</h3>';
-            h += '<table class="widefat striped"><thead><tr>';
+            h += '<div class="darkshield-table-wrap"><table class="widefat striped"><thead><tr>';
             h += '<th>#</th><th>URL</th><th>Type</th><th>DNS</th><th>Connect</th><th>TTFB</th><th>Download</th><th>Total</th><th>Size</th><th>Cached</th>';
             h += '</tr></thead><tbody>';
 
@@ -317,7 +317,7 @@
                 h += '<tr><td colspan="10" style="text-align:center;color:#666;">Showing top 100 of ' + data.length + '</td></tr>';
             }
 
-            h += '</tbody></table>';
+            h += '</tbody></table></div>';
 
             // Waterfall chart
             h += this.waterfall(data.slice(0, 20));
@@ -346,7 +346,7 @@
 
             if (domArr.length > 0) {
                 h += '<h3 style="margin-top:25px;">🌍 External Domains Summary</h3>';
-                h += '<table class="widefat striped"><thead><tr>';
+                h += '<div class="darkshield-table-wrap"><table class="widefat striped"><thead><tr>';
                 h += '<th>Domain</th><th>Requests</th><th>Total Time</th><th>Total Size</th><th>Avg Time</th><th>Status</th>';
                 h += '</tr></thead><tbody>';
 
@@ -368,7 +368,7 @@
                     h += '</td></tr>';
                 }
 
-                h += '</tbody></table>';
+                h += '</tbody></table></div>';
             }
 
             $container.append(h);
@@ -432,9 +432,9 @@
 
         card: function (label, value, color) {
             var cs = color ? 'color:' + color + ';' : '';
-            return '<div class="card" style="flex:1;min-width:120px;padding:15px;">' +
-                '<h3 style="margin:0 0 5px;font-size:12px;color:#666;">' + DarkShield.escapeHtml(String(label)) + '</h3>' +
-                '<p style="margin:0;font-size:22px;font-weight:bold;' + cs + '">' + DarkShield.escapeHtml(String(value)) + '</p></div>';
+            return '<div class="darkshield-stat-card">' +
+                '<h3>' + DarkShield.escapeHtml(String(label)) + '</h3>' +
+                '<p style="' + cs + '">' + DarkShield.escapeHtml(String(value)) + '</p></div>';
         },
 
         colorMs: function (ms, threshold) {

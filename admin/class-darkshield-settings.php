@@ -129,21 +129,32 @@ class DarkShield_Settings {
 	public function render_mode() {
 		$mode  = DarkShield_Utils::get_mode();
 		$modes = array(
-			'normal'   => array( '🟢', __( 'Normal — All requests allowed', 'darkshield' ), '#00a32a' ),
-			'national' => array( '🟡', __( 'National — Only Iranian domains allowed', 'darkshield' ), '#dba617' ),
-			'offline'  => array( '🔴', __( 'Offline — All external blocked', 'darkshield' ), '#d63638' ),
+			'normal'   => array( '🟢', __( 'Normal', 'darkshield' ), __( 'All requests allowed', 'darkshield' ), '#16a34a' ),
+			'national' => array( '🟡', __( 'National', 'darkshield' ), __( 'Only Iranian domains allowed', 'darkshield' ), '#d97706' ),
+			'offline'  => array( '🔴', __( 'Offline', 'darkshield' ), __( 'All external requests blocked', 'darkshield' ), '#dc2626' ),
 		);
+		echo '<div class="darkshield-mode-grid">';
 		foreach ( $modes as $key => $m ) {
-			$style = ( $mode === $key ) ? 'font-weight:bold;color:' . $m[2] . ';' : '';
+			$active = ( $mode === $key );
 			printf(
-				'<label style="display:block;margin-bottom:10px;padding:8px 12px;border:1px solid #ddd;border-radius:4px;%s"><input type="radio" name="darkshield_settings[mode]" value="%s" %s /> %s %s</label>',
-				esc_attr( $style ),
+				'<label class="darkshield-mode-card%s" style="--ds-mode-color:%s;">
+					<input type="radio" name="darkshield_settings[mode]" value="%s" %s />
+					<span class="darkshield-mode-card-icon">%s</span>
+					<span class="darkshield-mode-card-body">
+						<span class="darkshield-mode-card-title">%s</span>
+						<span class="darkshield-mode-card-desc">%s</span>
+					</span>
+				</label>',
+				$active ? ' is-active' : '',
+				esc_attr( $m[3] ),
 				esc_attr( $key ),
 				checked( $mode, $key, false ),
 				esc_html( $m[0] ),
-				esc_html( $m[1] )
+				esc_html( $m[1] ),
+				esc_html( $m[2] )
 			);
 		}
+		echo '</div>';
 	}
 
 	public function render_checkbox( $args ) {
@@ -186,8 +197,9 @@ class DarkShield_Settings {
 			<p><strong><?php esc_html_e( 'Quick Add:', 'darkshield' ); ?></strong></p>
 
 			<!-- Iranian Services -->
-			<p style="margin:10px 0 5px;font-size:12px;font-weight:600;color:#333;">🇮🇷 <?php esc_html_e( 'Iranian Services', 'darkshield' ); ?></p>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px;">
+			<div class="darkshield-quick-add-group">
+			<p>🇮🇷 <?php esc_html_e( 'Iranian Services', 'darkshield' ); ?></p>
+			<div class="darkshield-quick-add-buttons">
 				<?php
 				$iranian = array(
 					__( 'SMS Providers', 'darkshield' )  => "api.kavenegar.com\nrest.payamak-panel.com\napi.sms.ir\napi.ghasedak.me\napi.melipayamak.com\napi2.ippanel.com\napi.limosms.com\napi.farazsms.com\nsms.magfa.com\napi.payamresan.com",
@@ -211,10 +223,12 @@ class DarkShield_Settings {
 				$this->render_quick_buttons( $iranian );
 				?>
 			</div>
+			</div>
 
 			<!-- Messenger APIs -->
-			<p style="margin:10px 0 5px;font-size:12px;font-weight:600;color:#333;">💬 <?php esc_html_e( 'Messenger APIs', 'darkshield' ); ?></p>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px;">
+			<div class="darkshield-quick-add-group">
+			<p>💬 <?php esc_html_e( 'Messenger APIs', 'darkshield' ); ?></p>
+			<div class="darkshield-quick-add-buttons">
 				<?php
 				$messenger = array(
 					__( 'Telegram', 'darkshield' )      => 'api.telegram.org',
@@ -226,10 +240,12 @@ class DarkShield_Settings {
 				$this->render_quick_buttons( $messenger );
 				?>
 			</div>
+			</div>
 
 			<!-- International Payment -->
-			<p style="margin:10px 0 5px;font-size:12px;font-weight:600;color:#333;">💳 <?php esc_html_e( 'International Payment', 'darkshield' ); ?></p>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px;">
+			<div class="darkshield-quick-add-group">
+			<p>💳 <?php esc_html_e( 'International Payment', 'darkshield' ); ?></p>
+			<div class="darkshield-quick-add-buttons">
 				<?php
 				$intl_payment = array(
 					__( 'PayPal', 'darkshield' )        => "api.paypal.com\nwww.paypal.com\napi-m.paypal.com\napi-3t.paypal.com\nipnpb.paypal.com",
@@ -248,10 +264,12 @@ class DarkShield_Settings {
 				$this->render_quick_buttons( $intl_payment );
 				?>
 			</div>
+			</div>
 
 			<!-- Email Services -->
-			<p style="margin:10px 0 5px;font-size:12px;font-weight:600;color:#333;">📧 <?php esc_html_e( 'Email Services', 'darkshield' ); ?></p>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px;">
+			<div class="darkshield-quick-add-group">
+			<p>📧 <?php esc_html_e( 'Email Services', 'darkshield' ); ?></p>
+			<div class="darkshield-quick-add-buttons">
 				<?php
 				$email = array(
 					__( 'Mailchimp', 'darkshield' )  => "api.mailchimp.com\nus1.api.mailchimp.com",
@@ -265,10 +283,12 @@ class DarkShield_Settings {
 				$this->render_quick_buttons( $email );
 				?>
 			</div>
+			</div>
 
 			<!-- Other APIs -->
-			<p style="margin:10px 0 5px;font-size:12px;font-weight:600;color:#333;">🔌 <?php esc_html_e( 'Other APIs', 'darkshield' ); ?></p>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;">
+			<div class="darkshield-quick-add-group">
+			<p>🔌 <?php esc_html_e( 'Other APIs', 'darkshield' ); ?></p>
+			<div class="darkshield-quick-add-buttons">
 				<?php
 				$other = array(
 					__( 'Google APIs', 'darkshield' ) => "www.googleapis.com\nmaps.googleapis.com\ntranslate.googleapis.com\nfcm.googleapis.com",
@@ -281,6 +301,7 @@ class DarkShield_Settings {
 				);
 				$this->render_quick_buttons( $other );
 				?>
+			</div>
 			</div>
 		</div>
 

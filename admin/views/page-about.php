@@ -2,15 +2,17 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+$darkshield_page_title    = __( 'About', 'darkshield' );
+$darkshield_page_subtitle = __( 'Version, features, and system information at a glance.', 'darkshield' );
 ?>
-<div class="wrap">
-	<h1>🛡️ <?php esc_html_e( 'DarkShield — About', 'darkshield' ); ?></h1>
+<div class="wrap darkshield">
+	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-page-header.php'; ?>
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
-	<div style="margin-top:20px;">
+	<div>
 
-		<div class="card" style="max-width:800px;padding:30px;">
-			<h2 style="margin-top:0;">🛡️ DarkShield v<?php echo esc_html( DARKSHIELD_VERSION ); ?></h2>
+		<div class="card" style="max-width:800px;">
+			<h2 class="darkshield-card-title">DarkShield v<?php echo esc_html( DARKSHIELD_VERSION ); ?></h2>
 			<p style="font-size:15px;"><?php esc_html_e( 'Block external requests, protect privacy, and improve performance.', 'darkshield' ); ?></p>
 
 			<hr>
@@ -30,6 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<hr>
 
 			<h3><?php esc_html_e( 'System Info', 'darkshield' ); ?></h3>
+			<div class="darkshield-table-wrap">
 			<table class="form-table">
 				<tr><th><?php esc_html_e( 'Plugin Version', 'darkshield' ); ?></th><td><?php echo esc_html( DARKSHIELD_VERSION ); ?></td></tr>
 				<tr><th><?php esc_html_e( 'WordPress', 'darkshield' ); ?></th><td><?php echo esc_html( get_bloginfo( 'version' ) ); ?></td></tr>
@@ -41,6 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<tr><th><?php esc_html_e( 'Log Enabled', 'darkshield' ); ?></th><td><?php echo DarkShield_Utils::get_setting( 'log_enabled', 1 ) ? '✅' : '❌'; ?></td></tr>
 				<tr><th><?php esc_html_e( 'Last Scan', 'darkshield' ); ?></th><td><?php echo esc_html( get_option( 'darkshield_last_scan', __( 'Never', 'darkshield' ) ) ); ?></td></tr>
 			</table>
+			</div>
 
 			<hr>
 

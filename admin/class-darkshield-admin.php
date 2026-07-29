@@ -67,6 +67,12 @@ class DarkShield_Admin {
 
 		$this->current_hook = $hook;
 
+		// DarkShield's own screens must never depend on an external request —
+		// regardless of the "Block Emoji" setting, strip WP core's emoji-to-image
+		// loader here so no s.w.org fetch can ever happen on our own pages.
+		remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+		remove_action( 'admin_print_styles', 'print_emoji_styles' );
+
 		// Use wp_enqueue for CSS
 		wp_enqueue_style(
 			'darkshield-admin',
