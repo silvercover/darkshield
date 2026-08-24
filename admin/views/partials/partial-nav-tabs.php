@@ -10,6 +10,7 @@ $tabs    = array(
 	'darkshield-settings'    => array( '⚙️', __( 'Settings', 'darkshield' ) ),
 	'darkshield-log'         => array( '📋', __( 'Log', 'darkshield' ) ),
 	'darkshield-whitelist'   => array( '📝', __( 'Whitelist', 'darkshield' ) ),
+	'darkshield-rules'       => array( '🧩', __( 'Rules', 'darkshield' ) ),
 	'darkshield-about'       => array( 'ℹ️', __( 'About', 'darkshield' ) ),
 );
 ?>

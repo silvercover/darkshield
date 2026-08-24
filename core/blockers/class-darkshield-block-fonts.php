@@ -42,7 +42,11 @@ class DarkShield_Block_Fonts {
 			if ( DarkShield_Utils::is_internal_url( $style->src ) ) {
 				continue;
 			}
-			if ( DarkShield_Utils::is_whitelisted( DarkShield_Utils::extract_domain( $style->src ) ) ) {
+			$domain = DarkShield_Utils::extract_domain( $style->src );
+			if ( DarkShield_Utils::is_whitelisted( $domain ) ) {
+				continue;
+			}
+			if ( class_exists( 'DarkShield_Rule_Engine' ) && 'allow' === DarkShield_Rule_Engine::evaluate( $style->src, $domain, array( 'resource_type' => 'font' ) ) ) {
 				continue;
 			}
 			if ( $this->is_font( $style->src ) ) {
@@ -67,7 +71,11 @@ class DarkShield_Block_Fonts {
 		if ( strpos( $src, '//' ) === false || DarkShield_Utils::is_internal_url( $src ) ) {
 			return $src;
 		}
-		if ( DarkShield_Utils::is_whitelisted( DarkShield_Utils::extract_domain( $src ) ) ) {
+		$domain = DarkShield_Utils::extract_domain( $src );
+		if ( DarkShield_Utils::is_whitelisted( $domain ) ) {
+			return $src;
+		}
+		if ( class_exists( 'DarkShield_Rule_Engine' ) && 'allow' === DarkShield_Rule_Engine::evaluate( $src, $domain, array( 'resource_type' => 'font' ) ) ) {
 			return $src;
 		}
 		if ( $this->is_font( $src ) ) {

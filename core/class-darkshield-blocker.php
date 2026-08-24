@@ -73,7 +73,7 @@ class DarkShield_Blocker {
 			return false;
 		}
 
-		if ( ! DarkShield_Utils::should_block( $url ) ) {
+		if ( ! DarkShield_Utils::should_block( $url, array( 'resource_type' => 'http' ) ) ) {
 			return false;
 		}
 

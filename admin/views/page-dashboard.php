@@ -37,6 +37,36 @@ $last_scan   = get_option( 'darkshield_last_scan', '' );
 $wl_count    = count( get_option( 'darkshield_whitelist', array() ) );
 $svc_count   = count( DarkShield_Utils::get_allowed_services() );
 
+$rules_table = $wpdb->prefix . 'darkshield_rules';
+$rules_exist = DarkShield_Utils::table_exists( $rules_table );
+$allow_rules = $rules_exist ? (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$rules_table} WHERE enabled = 1 AND action = 'allow'" ) : 0;
+$deny_rules  = $rules_exist ? (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$rules_table} WHERE enabled = 1 AND action = 'deny'" ) : 0;
+
+$log_blocked_7d = DarkShield_Utils::table_exists( $log_table )
+	? (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$log_table} WHERE blocked = 1 AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)" )
+	: 0;
+
+$top_domains = array();
+if ( DarkShield_Utils::table_exists( $log_table ) ) {
+	$top_domains = $wpdb->get_results(
+		"SELECT domain, COUNT(*) as cnt FROM {$log_table} WHERE blocked = 1 GROUP BY domain ORDER BY cnt DESC LIMIT 5"
+	);
+}
+
+$darkshield_trend_data = array();
+if ( DarkShield_Utils::table_exists( $log_table ) ) {
+	$rows = $wpdb->get_results(
+		"SELECT DATE(created_at) as d, COUNT(*) as total, SUM(blocked) as blocked FROM {$log_table} WHERE created_at >= DATE_SUB(NOW(), INTERVAL 14 DAY) GROUP BY DATE(created_at) ORDER BY d ASC"
+	);
+	foreach ( $rows as $row ) {
+		$darkshield_trend_data[] = array(
+			'd'       => $row->d,
+			'total'   => (int) $row->total,
+			'blocked' => (int) $row->blocked,
+		);
+	}
+}
+
 /**
  * Format date — Shamsi if wp-parsidate or wp-jalali active.
  */
@@ -128,6 +158,40 @@ $darkshield_page_subtitle = __( 'Privacy shield, performance analyzer, and traff
 				<p style="--ds-stat-color:#16a34a;"><?php echo esc_html( $svc_count ); ?></p>
 			</div>
 		</div>
+
+		<!-- Rule / Trend KPIs -->
+		<div class="darkshield-stats-row">
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Allow Rules', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#16a34a;"><?php echo esc_html( number_format_i18n( $allow_rules ) ); ?></p>
+			</div>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Deny Rules', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#dc2626;"><?php echo esc_html( number_format_i18n( $deny_rules ) ); ?></p>
+			</div>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Blocked (7 days)', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#dc2626;"><?php echo esc_html( number_format_i18n( $log_blocked_7d ) ); ?></p>
+			</div>
+		</div>
+
+		<!-- Trend Chart -->
+		<div class="card">
+			<h2><?php esc_html_e( 'Blocked Requests — Last 14 Days', 'darkshield' ); ?></h2>
+			<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-trend-chart.php'; ?>
+		</div>
+
+		<?php if ( ! empty( $top_domains ) ) : ?>
+			<!-- Top Blocked Domains -->
+			<div class="card">
+				<h2><?php esc_html_e( 'Most Blocked Domains', 'darkshield' ); ?></h2>
+				<?php foreach ( $top_domains as $td ) : ?>
+					<span class="darkshield-pill" style="color:#dc2626;">
+						<?php echo esc_html( $td->domain . ' (' . $td->cnt . ')' ); ?>
+					</span>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
 
 		<!-- Active Blockers -->
 		<div class="card">

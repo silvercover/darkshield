@@ -32,7 +32,7 @@ class DarkShield_Block_Embeds {
 			return $result;
 		}
 
-		if ( DarkShield_Utils::should_block( $url ) ) {
+		if ( DarkShield_Utils::should_block( $url, array( 'resource_type' => 'iframe' ) ) ) {
 			$logger = new DarkShield_Logger();
 			$logger->log( $url, $domain, 'embeds', 'blocker_embeds', DarkShield_Utils::get_mode(), true );
 			/* translators: %s: domain name of the blocked embed */

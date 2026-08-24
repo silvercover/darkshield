@@ -500,6 +500,16 @@
 	border-radius: var(--ds-radius-md);
 }
 
+.darkshield-trend-chart {
+	width: 100%;
+	overflow-x: auto;
+}
+
+.darkshield-trend-chart svg {
+	display: block;
+	max-width: 100%;
+}
+
 .darkshield-table-wrap table {
 	margin: 0;
 }

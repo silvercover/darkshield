@@ -46,7 +46,7 @@ class DarkShield_Mode_Offline {
 		}
 
 		// should_block checks whitelist, services, messenger
-		if ( ! DarkShield_Utils::should_block( $url ) ) {
+		if ( ! DarkShield_Utils::should_block( $url, array( 'resource_type' => 'http' ) ) ) {
 			return false;
 		}
 
@@ -99,7 +99,7 @@ class DarkShield_Mode_Offline {
 			}
 
 			// Whitelisted / allowed service / messenger = safe
-			if ( ! DarkShield_Utils::should_block( $src ) ) {
+			if ( ! DarkShield_Utils::should_block( $src, array( 'resource_type' => $type ) ) ) {
 				continue;
 			}
 
@@ -141,8 +141,10 @@ class DarkShield_Mode_Offline {
 			return $src;
 		}
 
+		$type = ( 'style_loader_src' === current_filter() ) ? 'style' : 'script';
+
 		// Check block decision
-		if ( DarkShield_Utils::should_block( $src ) ) {
+		if ( DarkShield_Utils::should_block( $src, array( 'resource_type' => $type ) ) ) {
 			return false;
 		}
 

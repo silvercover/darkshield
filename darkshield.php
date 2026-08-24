@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DARKSHIELD_VERSION', '1.0.0' );
+define( 'DARKSHIELD_VERSION', '1.0.1' );
 define( 'DARKSHIELD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DARKSHIELD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'DARKSHIELD_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -67,6 +67,10 @@ require_once DARKSHIELD_PLUGIN_DIR . 'core/class-darkshield-compatibility.php';
 require_once DARKSHIELD_PLUGIN_DIR . 'core/modes/class-darkshield-mode-normal.php';
 require_once DARKSHIELD_PLUGIN_DIR . 'core/modes/class-darkshield-mode-national.php';
 require_once DARKSHIELD_PLUGIN_DIR . 'core/modes/class-darkshield-mode-offline.php';
+
+require_once DARKSHIELD_PLUGIN_DIR . 'core/rules/class-darkshield-rule-matcher.php';
+require_once DARKSHIELD_PLUGIN_DIR . 'core/rules/class-darkshield-rule-repository.php';
+require_once DARKSHIELD_PLUGIN_DIR . 'core/rules/class-darkshield-rule-engine.php';
 
 require_once DARKSHIELD_PLUGIN_DIR . 'core/blockers/class-darkshield-block-fonts.php';
 require_once DARKSHIELD_PLUGIN_DIR . 'core/blockers/class-darkshield-block-cdn.php';
@@ -139,9 +143,22 @@ final class DarkShield_Plugin {
 		$this->register_core_hooks();
 		$this->register_cron();
 
+		DarkShield_Utils::register_cache_hooks();
 		DarkShield_Utils::ensure_tables();
+		$this->maybe_upgrade();
 
 		$this->loader->run();
+	}
+
+	private function maybe_upgrade() {
+		$installed = get_option( 'darkshield_version', '' );
+		if ( $installed === DARKSHIELD_VERSION ) {
+			return;
+		}
+		if ( class_exists( 'DarkShield_Activator' ) ) {
+			DarkShield_Activator::create_tables();
+		}
+		update_option( 'darkshield_version', DARKSHIELD_VERSION );
 	}
 
 	private function load_textdomain() {

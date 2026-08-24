@@ -13,7 +13,7 @@ class DarkShield_Logger {
 		$this->table = $wpdb->prefix . 'darkshield_log';
 	}
 
-	public function log( $url, $domain, $type, $source, $mode, $blocked ) {
+	public function log( $url, $domain, $type, $source, $mode, $blocked, $rule_id = null ) {
 		if ( ! DarkShield_Utils::get_setting( 'log_enabled', 1 ) ) {
 			return;
 		}
@@ -25,15 +25,16 @@ class DarkShield_Logger {
 		$wpdb->insert(
 			$this->table,
 			array(
-				'url'        => substr( $url, 0, 2048 ),
-				'domain'     => $domain,
-				'type'       => $type,
-				'source'     => $source,
-				'mode'       => $mode,
-				'blocked'    => $blocked ? 1 : 0,
-				'created_at' => current_time( 'mysql' ),
+				'url'             => substr( $url, 0, 2048 ),
+				'domain'          => $domain,
+				'type'            => $type,
+				'source'          => $source,
+				'mode'            => $mode,
+				'blocked'         => $blocked ? 1 : 0,
+				'matched_rule_id' => $rule_id ? (int) $rule_id : null,
+				'created_at'      => current_time( 'mysql' ),
 			),
-			array( '%s', '%s', '%s', '%s', '%s', '%d', '%s' )
+			array( '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s' )
 		);
 	}
 

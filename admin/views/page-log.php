@@ -22,9 +22,14 @@ $fm  = isset( $_GET['log_mode'] ) ? sanitize_text_field( wp_unslash( $_GET['log_
 $fb  = isset( $_GET['log_status'] ) ? sanitize_text_field( wp_unslash( $_GET['log_status'] ) ) : '';
 $fdf = isset( $_GET['log_date_from'] ) ? sanitize_text_field( wp_unslash( $_GET['log_date_from'] ) ) : '';
 $fdt = isset( $_GET['log_date_to'] ) ? sanitize_text_field( wp_unslash( $_GET['log_date_to'] ) ) : '';
+$fr  = isset( $_GET['log_rule_id'] ) ? sanitize_text_field( wp_unslash( $_GET['log_rule_id'] ) ) : '';
 
 $w = array( '1=1' );
 $a = array();
+if ( '' !== $fr ) {
+	$w[] = 'matched_rule_id = %d';
+	$a[] = (int) $fr;
+}
 if ( $fd ) {
 	$w[] = 'domain LIKE %s';
 	$a[] = '%' . $wpdb->esc_like( $fd ) . '%';
@@ -88,7 +93,7 @@ if ( $ok ) {
 }
 
 $tp = ceil( $total / max( $pp, 1 ) );
-$hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
+$hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt || '' !== $fr;
 ?>
 
 <?php
@@ -200,7 +205,7 @@ $darkshield_page_subtitle = __( 'Every allowed and blocked request, filterable a
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-log' ) ); ?>" class="darkshield-inline-form">
 				<?php wp_nonce_field( 'darkshield_log_actions' ); ?>
 				<?php
-				foreach ( array( 'log_domain', 'log_type', 'log_source', 'log_mode', 'log_status', 'log_date_from', 'log_date_to' ) as $ep ) {
+				foreach ( array( 'log_domain', 'log_type', 'log_source', 'log_mode', 'log_status', 'log_date_from', 'log_date_to', 'log_rule_id' ) as $ep ) {
 					$ev = isset( $_GET[ $ep ] ) ? sanitize_text_field( wp_unslash( $_GET[ $ep ] ) ) : '';
 					if ( '' !== $ev ) {
 						echo '<input type="hidden" name="' . esc_attr( $ep ) . '" value="' . esc_attr( $ev ) . '" />';
@@ -258,6 +263,14 @@ $darkshield_page_subtitle = __( 'Every allowed and blocked request, filterable a
 								<?php if ( DarkShield_Utils::is_allowed_service( $log->domain ) ) : ?>
 									<br><small style="color:#16a34a;"><?php esc_html_e( 'service', 'darkshield' ); ?></small>
 								<?php endif; ?>
+								<?php if ( ! empty( $log->matched_rule_id ) ) : ?>
+									<br><small style="color:#7c3aed;">
+										<?php
+										/* translators: %d: rule ID that matched this log entry */
+										printf( esc_html__( 'rule #%d', 'darkshield' ), (int) $log->matched_rule_id );
+										?>
+									</small>
+								<?php endif; ?>
 							</td>
 							<td><span class="darkshield-badge"><?php echo esc_html( ucfirst( $log->type ) ); ?></span></td>
 							<td style="font-size:12px;"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $log->source ) ) ); ?></td>
@@ -285,7 +298,7 @@ $darkshield_page_subtitle = __( 'Every allowed and blocked request, filterable a
 					<div class="tablenav-pages">
 						<?php
 						$base = admin_url( 'admin.php?page=darkshield-log' );
-						$fp   = compact( 'fd', 'ft', 'fs', 'fm', 'fb', 'fdf', 'fdt' );
+						$fp   = compact( 'fd', 'ft', 'fs', 'fm', 'fb', 'fdf', 'fdt', 'fr' );
 						$fmap = array(
 							'fd'  => 'log_domain',
 							'ft'  => 'log_type',
@@ -294,6 +307,7 @@ $darkshield_page_subtitle = __( 'Every allowed and blocked request, filterable a
 							'fb'  => 'log_status',
 							'fdf' => 'log_date_from',
 							'fdt' => 'log_date_to',
+							'fr'  => 'log_rule_id',
 						);
 						foreach ( $fmap as $var => $param ) {
 							if ( ! empty( $$var ) || '0' === $$var ) {

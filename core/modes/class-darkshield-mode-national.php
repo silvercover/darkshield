@@ -50,7 +50,7 @@ class DarkShield_Mode_National {
 				continue;
 			}
 
-			if ( ! DarkShield_Utils::should_block( $src ) ) {
+			if ( ! DarkShield_Utils::should_block( $src, array( 'resource_type' => $type ) ) ) {
 				continue;
 			}
 
@@ -86,7 +86,9 @@ class DarkShield_Mode_National {
 			return $src;
 		}
 
-		if ( DarkShield_Utils::should_block( $src ) ) {
+		$type = ( 'style_loader_src' === current_filter() ) ? 'style' : 'script';
+
+		if ( DarkShield_Utils::should_block( $src, array( 'resource_type' => $type ) ) ) {
 			return false;
 		}
 
