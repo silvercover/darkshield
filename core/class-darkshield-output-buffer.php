@@ -51,7 +51,9 @@ class DarkShield_Output_Buffer {
 					return $match[0];
 				}
 
-				if ( ! DarkShield_Utils::should_block( $url ) ) {
+				$resource_type = $this->resource_type_for_tag( $tag, $match[1] . ' ' . $match[3] );
+
+				if ( ! DarkShield_Utils::should_block( $url, array( 'resource_type' => $resource_type ) ) ) {
 					return $match[0];
 				}
 
@@ -62,5 +64,23 @@ class DarkShield_Output_Buffer {
 			},
 			$html
 		);
+	}
+
+	private function resource_type_for_tag( $tag, $attrs ) {
+		switch ( $tag ) {
+			case 'script':
+				return 'script';
+			case 'img':
+				return 'image';
+			case 'iframe':
+				return 'iframe';
+			case 'link':
+				if ( preg_match( '#\bas\s*=\s*["\']?font["\']?#i', $attrs ) ) {
+					return 'font';
+				}
+				return 'style';
+			default:
+				return '';
+		}
 	}
 }

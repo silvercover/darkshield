@@ -7,19 +7,48 @@ class DarkShield_Utils
 {
 
 	// ========================================
+	// Request-scoped cache
+	// ========================================
+
+	private static $cache = array();
+
+	public static function reset_cache($key = null)
+	{
+		if (null === $key) {
+			self::$cache = array();
+			return;
+		}
+		unset(self::$cache[$key]);
+	}
+
+	public static function register_cache_hooks()
+	{
+		$reset = array('DarkShield_Utils', 'reset_cache');
+		add_action('update_option_darkshield_whitelist', $reset);
+		add_action('update_option_darkshield_settings', $reset);
+		add_action('update_option_darkshield_allowed_services', $reset);
+		add_action('update_option_darkshield_mode', $reset);
+		add_action('darkshield_rules_changed', $reset);
+
+		if (class_exists('DarkShield_Rule_Engine')) {
+			add_action('darkshield_rules_changed', array('DarkShield_Rule_Engine', 'reset_cache'));
+		}
+	}
+
+	// ========================================
 	// Mode
 	// ========================================
 
 	public static function get_mode()
 	{
-		static $mode = null;
-		if (null !== $mode) {
-			return $mode;
+		if (isset(self::$cache['mode'])) {
+			return self::$cache['mode'];
 		}
 		$mode = get_option('darkshield_mode', 'normal');
 		if (! in_array($mode, array('normal', 'national', 'offline'), true)) {
 			$mode = 'normal';
 		}
+		self::$cache['mode'] = $mode;
 		return $mode;
 	}
 
@@ -30,6 +59,7 @@ class DarkShield_Utils
 		}
 		$old = self::get_mode();
 		update_option('darkshield_mode', $new_mode);
+		self::reset_cache();
 
 		if ($old !== $new_mode && class_exists('DarkShield_Compatibility')) {
 			DarkShield_Compatibility::purge_caches();
@@ -63,9 +93,8 @@ class DarkShield_Utils
 
 	public static function get_settings()
 	{
-		static $settings = null;
-		if (null !== $settings) {
-			return $settings;
+		if (isset(self::$cache['settings'])) {
+			return self::$cache['settings'];
 		}
 		$defaults = array(
 			'block_fonts'     => 1,
@@ -83,6 +112,7 @@ class DarkShield_Utils
 			'log_retention'   => 30,
 		);
 		$settings = wp_parse_args(get_option('darkshield_settings', array()), $defaults);
+		self::$cache['settings'] = $settings;
 		return $settings;
 	}
 
@@ -113,11 +143,10 @@ class DarkShield_Utils
 
 	public static function get_site_domain()
 	{
-		static $domain = null;
-		if (null === $domain) {
-			$domain = self::extract_domain(home_url());
+		if (! isset(self::$cache['site_domain'])) {
+			self::$cache['site_domain'] = self::extract_domain(home_url());
 		}
-		return $domain;
+		return self::$cache['site_domain'];
 	}
 
 	public static function is_local_domain($domain)
@@ -155,14 +184,15 @@ class DarkShield_Utils
 			return true;
 		}
 
-		static $iranian = null;
-		if (null === $iranian) {
+		if (! isset(self::$cache['iranian_domains'])) {
 			$file    = DARKSHIELD_PLUGIN_DIR . 'data/iranian-domains.php';
 			$iranian = file_exists($file) ? include $file : array();
 			if (! is_array($iranian)) {
 				$iranian = array();
 			}
+			self::$cache['iranian_domains'] = $iranian;
 		}
+		$iranian = self::$cache['iranian_domains'];
 
 		if (in_array($domain, $iranian, true)) {
 			return true;
@@ -183,15 +213,15 @@ class DarkShield_Utils
 
 	public static function get_known_domains()
 	{
-		static $domains = null;
-		if (null !== $domains) {
-			return $domains;
+		if (isset(self::$cache['known_domains'])) {
+			return self::$cache['known_domains'];
 		}
 		$file    = DARKSHIELD_PLUGIN_DIR . 'data/known-domains.php';
 		$domains = file_exists($file) ? include $file : array();
 		if (! is_array($domains)) {
 			$domains = array();
 		}
+		self::$cache['known_domains'] = $domains;
 		return $domains;
 	}
 
@@ -201,13 +231,14 @@ class DarkShield_Utils
 
 	public static function is_whitelisted($domain)
 	{
-		static $wl = null;
-		if (null === $wl) {
+		if (! isset(self::$cache['whitelist'])) {
 			$wl = get_option('darkshield_whitelist', array());
 			if (! is_array($wl)) {
 				$wl = array();
 			}
+			self::$cache['whitelist'] = $wl;
 		}
+		$wl     = self::$cache['whitelist'];
 		$domain = strtolower($domain);
 		if (in_array($domain, $wl, true)) {
 			return true;
@@ -248,14 +279,13 @@ class DarkShield_Utils
 
 	public static function get_allowed_services()
 	{
-		static $services = null;
-		if (null !== $services) {
-			return $services;
+		if (isset(self::$cache['allowed_services'])) {
+			return self::$cache['allowed_services'];
 		}
 		$raw = get_option('darkshield_allowed_services', '');
 		if (empty($raw)) {
-			$services = array();
-			return $services;
+			self::$cache['allowed_services'] = array();
+			return self::$cache['allowed_services'];
 		}
 		$services = array();
 		foreach (explode("\n", $raw) as $line) {
@@ -264,6 +294,7 @@ class DarkShield_Utils
 				$services[] = $d;
 			}
 		}
+		self::$cache['allowed_services'] = $services;
 		return $services;
 	}
 
@@ -335,7 +366,7 @@ class DarkShield_Utils
 	// Should Block — Main Decision
 	// ========================================
 
-	public static function should_block($url)
+	public static function should_block($url, $context = array())
 	{
 		$mode = self::get_mode();
 
@@ -351,6 +382,16 @@ class DarkShield_Utils
 
 		if (empty($domain)) {
 			return false;
+		}
+
+		if (class_exists('DarkShield_Rule_Engine')) {
+			$decision = DarkShield_Rule_Engine::evaluate($url, $domain, $context);
+			if ('deny' === $decision) {
+				return true;
+			}
+			if ('allow' === $decision) {
+				return false;
+			}
 		}
 
 		if (self::is_whitelisted($domain)) {
@@ -395,10 +436,11 @@ class DarkShield_Utils
 	public static function ensure_tables()
 	{
 		global $wpdb;
-		$log  = $wpdb->prefix . 'darkshield_log';
-		$scan = $wpdb->prefix . 'darkshield_scan_results';
+		$log   = $wpdb->prefix . 'darkshield_log';
+		$scan  = $wpdb->prefix . 'darkshield_scan_results';
+		$rules = $wpdb->prefix . 'darkshield_rules';
 
-		if (! self::table_exists($log) || ! self::table_exists($scan)) {
+		if (! self::table_exists($log) || ! self::table_exists($scan) || ! self::table_exists($rules)) {
 			if (class_exists('DarkShield_Activator')) {
 				DarkShield_Activator::create_tables();
 			}

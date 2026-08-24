@@ -22,9 +22,14 @@ $fm  = isset( $_GET['log_mode'] ) ? sanitize_text_field( wp_unslash( $_GET['log_
 $fb  = isset( $_GET['log_status'] ) ? sanitize_text_field( wp_unslash( $_GET['log_status'] ) ) : '';
 $fdf = isset( $_GET['log_date_from'] ) ? sanitize_text_field( wp_unslash( $_GET['log_date_from'] ) ) : '';
 $fdt = isset( $_GET['log_date_to'] ) ? sanitize_text_field( wp_unslash( $_GET['log_date_to'] ) ) : '';
+$fr  = isset( $_GET['log_rule_id'] ) ? sanitize_text_field( wp_unslash( $_GET['log_rule_id'] ) ) : '';
 
 $w = array( '1=1' );
 $a = array();
+if ( '' !== $fr ) {
+	$w[] = 'matched_rule_id = %d';
+	$a[] = (int) $fr;
+}
 if ( $fd ) {
 	$w[] = 'domain LIKE %s';
 	$a[] = '%' . $wpdb->esc_like( $fd ) . '%';
@@ -88,47 +93,51 @@ if ( $ok ) {
 }
 
 $tp = ceil( $total / max( $pp, 1 ) );
-$hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
+$hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt || '' !== $fr;
 ?>
 
-<div class="wrap">
-	<h1>🛡️ <?php esc_html_e( 'DarkShield — Log', 'darkshield' ); ?></h1>
+<?php
+$darkshield_page_title    = __( 'Log', 'darkshield' );
+$darkshield_page_subtitle = __( 'Every allowed and blocked request, filterable and exportable.', 'darkshield' );
+?>
+<div class="wrap darkshield">
+	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-page-header.php'; ?>
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
-	<div style="margin-top:20px;">
+	<div>
 
 		<!-- Stats -->
-		<div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:20px;">
-			<div class="card" style="flex:1;min-width:130px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Total', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;"><?php echo esc_html( number_format_i18n( $st ) ); ?></p>
+		<div class="darkshield-stats-row">
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Total', 'darkshield' ); ?></h3>
+				<p><?php echo esc_html( number_format_i18n( $st ) ); ?></p>
 			</div>
-			<div class="card" style="flex:1;min-width:130px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Blocked', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;color:#d63638;"><?php echo esc_html( number_format_i18n( $sb ) ); ?></p>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Blocked', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#dc2626;"><?php echo esc_html( number_format_i18n( $sb ) ); ?></p>
 			</div>
-			<div class="card" style="flex:1;min-width:130px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Allowed', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;color:#00a32a;"><?php echo esc_html( number_format_i18n( $sa ) ); ?></p>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Allowed', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#16a34a;"><?php echo esc_html( number_format_i18n( $sa ) ); ?></p>
 			</div>
-			<div class="card" style="flex:1;min-width:130px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php echo $hf ? esc_html__( 'Filtered', 'darkshield' ) : esc_html__( 'Showing', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;color:#2271b1;"><?php echo esc_html( number_format_i18n( $total ) ); ?></p>
+			<div class="darkshield-stat-card">
+				<h3><?php echo $hf ? esc_html__( 'Filtered', 'darkshield' ) : esc_html__( 'Showing', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#0284c7;"><?php echo esc_html( number_format_i18n( $total ) ); ?></p>
 			</div>
 		</div>
 
 		<!-- Filters -->
-		<div class="card" style="max-width:100%;padding:15px;margin-bottom:20px;">
-			<form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;">
+		<div class="card">
+			<form method="get" class="darkshield-filter-row">
 				<input type="hidden" name="page" value="darkshield-log" />
 
 				<label>
-					<span style="display:block;font-size:11px;font-weight:600;color:#666;"><?php esc_html_e( 'Domain', 'darkshield' ); ?></span>
+					<span><?php esc_html_e( 'Domain', 'darkshield' ); ?></span>
 					<input type="text" name="log_domain" value="<?php echo esc_attr( $fd ); ?>" style="width:140px;" />
 				</label>
 
 				<label>
-					<span style="display:block;font-size:11px;font-weight:600;color:#666;"><?php esc_html_e( 'Type', 'darkshield' ); ?></span>
+					<span><?php esc_html_e( 'Type', 'darkshield' ); ?></span>
 					<select name="log_type">
 						<option value=""><?php esc_html_e( 'All', 'darkshield' ); ?></option>
 						<?php foreach ( $types as $t ) : ?>
@@ -138,7 +147,7 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 				</label>
 
 				<label>
-					<span style="display:block;font-size:11px;font-weight:600;color:#666;"><?php esc_html_e( 'Source', 'darkshield' ); ?></span>
+					<span><?php esc_html_e( 'Source', 'darkshield' ); ?></span>
 					<select name="log_source">
 						<option value=""><?php esc_html_e( 'All', 'darkshield' ); ?></option>
 						<?php foreach ( $sources as $s ) : ?>
@@ -148,7 +157,7 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 				</label>
 
 				<label>
-					<span style="display:block;font-size:11px;font-weight:600;color:#666;"><?php esc_html_e( 'Mode', 'darkshield' ); ?></span>
+					<span><?php esc_html_e( 'Mode', 'darkshield' ); ?></span>
 					<select name="log_mode">
 						<option value=""><?php esc_html_e( 'All', 'darkshield' ); ?></option>
 						<?php foreach ( $modes as $m ) : ?>
@@ -158,7 +167,7 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 				</label>
 
 				<label>
-					<span style="display:block;font-size:11px;font-weight:600;color:#666;"><?php esc_html_e( 'Status', 'darkshield' ); ?></span>
+					<span><?php esc_html_e( 'Status', 'darkshield' ); ?></span>
 					<select name="log_status">
 						<option value=""><?php esc_html_e( 'All', 'darkshield' ); ?></option>
 						<option value="1" <?php selected( $fb, '1' ); ?>><?php esc_html_e( 'Blocked', 'darkshield' ); ?></option>
@@ -167,12 +176,12 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 				</label>
 
 				<label>
-					<span style="display:block;font-size:11px;font-weight:600;color:#666;"><?php esc_html_e( 'From', 'darkshield' ); ?></span>
+					<span><?php esc_html_e( 'From', 'darkshield' ); ?></span>
 					<input type="date" name="log_date_from" value="<?php echo esc_attr( $fdf ); ?>" />
 				</label>
 
 				<label>
-					<span style="display:block;font-size:11px;font-weight:600;color:#666;"><?php esc_html_e( 'To', 'darkshield' ); ?></span>
+					<span><?php esc_html_e( 'To', 'darkshield' ); ?></span>
 					<input type="date" name="log_date_to" value="<?php echo esc_attr( $fdt ); ?>" />
 				</label>
 
@@ -184,8 +193,8 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 		</div>
 
 		<!-- Actions -->
-		<div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;align-items:center;">
-			<form method="post">
+		<div class="darkshield-actions-row">
+			<form method="post" class="darkshield-inline-form">
 				<?php wp_nonce_field( 'darkshield_clear_log' ); ?>
 				<button type="submit" name="darkshield_clear_log" value="1" class="button" style="color:#a00;"
 					onclick="return confirm('<?php esc_attr_e( 'Clear all logs?', 'darkshield' ); ?>');">
@@ -193,10 +202,10 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 				</button>
 			</form>
 
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-log' ) ); ?>">
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-log' ) ); ?>" class="darkshield-inline-form">
 				<?php wp_nonce_field( 'darkshield_log_actions' ); ?>
 				<?php
-				foreach ( array( 'log_domain', 'log_type', 'log_source', 'log_mode', 'log_status', 'log_date_from', 'log_date_to' ) as $ep ) {
+				foreach ( array( 'log_domain', 'log_type', 'log_source', 'log_mode', 'log_status', 'log_date_from', 'log_date_to', 'log_rule_id' ) as $ep ) {
 					$ev = isset( $_GET[ $ep ] ) ? sanitize_text_field( wp_unslash( $_GET[ $ep ] ) ) : '';
 					if ( '' !== $ev ) {
 						echo '<input type="hidden" name="' . esc_attr( $ep ) . '" value="' . esc_attr( $ev ) . '" />';
@@ -213,6 +222,7 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 
 		<!-- Table -->
 		<?php if ( ! empty( $logs ) ) : ?>
+			<div class="darkshield-table-wrap">
 			<table class="widefat striped">
 				<thead>
 					<tr>
@@ -248,10 +258,18 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 							<td>
 								<code><?php echo esc_html( $log->domain ); ?></code>
 								<?php if ( DarkShield_Utils::is_whitelisted( $log->domain ) ) : ?>
-									<br><small style="color:#2271b1;"><?php esc_html_e( 'whitelisted', 'darkshield' ); ?></small>
+									<br><small style="color:#0284c7;"><?php esc_html_e( 'whitelisted', 'darkshield' ); ?></small>
 								<?php endif; ?>
 								<?php if ( DarkShield_Utils::is_allowed_service( $log->domain ) ) : ?>
-									<br><small style="color:#00a32a;"><?php esc_html_e( 'service', 'darkshield' ); ?></small>
+									<br><small style="color:#16a34a;"><?php esc_html_e( 'service', 'darkshield' ); ?></small>
+								<?php endif; ?>
+								<?php if ( ! empty( $log->matched_rule_id ) ) : ?>
+									<br><small style="color:#7c3aed;">
+										<?php
+										/* translators: %d: rule ID that matched this log entry */
+										printf( esc_html__( 'rule #%d', 'darkshield' ), (int) $log->matched_rule_id );
+										?>
+									</small>
 								<?php endif; ?>
 							</td>
 							<td><span class="darkshield-badge"><?php echo esc_html( ucfirst( $log->type ) ); ?></span></td>
@@ -272,6 +290,7 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 					<?php endforeach; ?>
 				</tbody>
 			</table>
+			</div>
 
 			<!-- Pagination -->
 			<?php if ( $tp > 1 ) : ?>
@@ -279,7 +298,7 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 					<div class="tablenav-pages">
 						<?php
 						$base = admin_url( 'admin.php?page=darkshield-log' );
-						$fp   = compact( 'fd', 'ft', 'fs', 'fm', 'fb', 'fdf', 'fdt' );
+						$fp   = compact( 'fd', 'ft', 'fs', 'fm', 'fb', 'fdf', 'fdt', 'fr' );
 						$fmap = array(
 							'fd'  => 'log_domain',
 							'ft'  => 'log_type',
@@ -288,6 +307,7 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 							'fb'  => 'log_status',
 							'fdf' => 'log_date_from',
 							'fdt' => 'log_date_to',
+							'fr'  => 'log_rule_id',
 						);
 						foreach ( $fmap as $var => $param ) {
 							if ( ! empty( $$var ) || '0' === $$var ) {
@@ -353,9 +373,9 @@ $hf = $fd || $ft || $fs || $fm || '' !== $fb || $fdf || $fdt;
 					<span><strong><?php esc_html_e( 'Logging:', 'darkshield' ); ?></strong>
 						<?php
 						if ( DarkShield_Utils::get_setting( 'log_enabled', 1 ) ) {
-							echo '<span style="color:#00a32a;">' . esc_html__( 'Enabled', 'darkshield' ) . '</span>';
+							echo '<span style="color:#16a34a;">' . esc_html__( 'Enabled', 'darkshield' ) . '</span>';
 						} else {
-							echo '<span style="color:#d63638;">' . esc_html__( 'Disabled', 'darkshield' ) . '</span>';
+							echo '<span style="color:#dc2626;">' . esc_html__( 'Disabled', 'darkshield' ) . '</span>';
 						}
 						?>
 					</span>

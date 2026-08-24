@@ -58,6 +58,10 @@ class DarkShield_Block_Updates {
 			'ts.w.org',
 		);
 
+		if ( class_exists( 'DarkShield_Rule_Engine' ) && 'allow' === DarkShield_Rule_Engine::evaluate( $url, $domain, array( 'resource_type' => 'http' ) ) ) {
+			return $preempt;
+		}
+
 		if ( in_array( $domain, $wp_domains, true ) ) {
 			$logger = new DarkShield_Logger();
 			$logger->log( $url, $domain, 'updates', 'blocker_updates', DarkShield_Utils::get_mode(), true );

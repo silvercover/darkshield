@@ -62,6 +62,9 @@ class DarkShield_Block_CDN {
 			if ( DarkShield_Utils::is_allowed_service( $domain ) ) {
 				continue;
 			}
+			if ( class_exists( 'DarkShield_Rule_Engine' ) && 'allow' === DarkShield_Rule_Engine::evaluate( $dep->src, $domain, array( 'resource_type' => $type ) ) ) {
+				continue;
+			}
 			if ( $this->is_cdn( $dep->src ) ) {
 				if ( 'script' === $type ) {
 					wp_dequeue_script( $handle );
@@ -84,6 +87,9 @@ class DarkShield_Block_CDN {
 		}
 		$domain = DarkShield_Utils::extract_domain( $src );
 		if ( DarkShield_Utils::is_whitelisted( $domain ) || DarkShield_Utils::is_allowed_service( $domain ) ) {
+			return $src;
+		}
+		if ( class_exists( 'DarkShield_Rule_Engine' ) && 'allow' === DarkShield_Rule_Engine::evaluate( $src, $domain ) ) {
 			return $src;
 		}
 		if ( $this->is_cdn( $src ) ) {

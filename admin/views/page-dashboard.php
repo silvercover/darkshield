@@ -19,9 +19,9 @@ if (
 }
 
 $mode_info = array(
-	'normal'   => array( '🟢', '#00a32a', __( 'Normal — All requests allowed', 'darkshield' ) ),
-	'national' => array( '🟡', '#dba617', __( 'National — Only Iranian domains allowed', 'darkshield' ) ),
-	'offline'  => array( '🔴', '#d63638', __( 'Offline — All external blocked', 'darkshield' ) ),
+	'normal'   => array( '🟢', '#16a34a', __( 'Normal', 'darkshield' ), __( 'All requests allowed', 'darkshield' ) ),
+	'national' => array( '🟡', '#d97706', __( 'National', 'darkshield' ), __( 'Only Iranian domains allowed', 'darkshield' ) ),
+	'offline'  => array( '🔴', '#dc2626', __( 'Offline', 'darkshield' ), __( 'All external requests blocked', 'darkshield' ) ),
 );
 $mi        = isset( $mode_info[ $mode ] ) ? $mode_info[ $mode ] : $mode_info['normal'];
 
@@ -36,6 +36,36 @@ $scan_total  = DarkShield_Utils::table_exists( $scan_table ) ? (int) $wpdb->get_
 $last_scan   = get_option( 'darkshield_last_scan', '' );
 $wl_count    = count( get_option( 'darkshield_whitelist', array() ) );
 $svc_count   = count( DarkShield_Utils::get_allowed_services() );
+
+$rules_table = $wpdb->prefix . 'darkshield_rules';
+$rules_exist = DarkShield_Utils::table_exists( $rules_table );
+$allow_rules = $rules_exist ? (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$rules_table} WHERE enabled = 1 AND action = 'allow'" ) : 0;
+$deny_rules  = $rules_exist ? (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$rules_table} WHERE enabled = 1 AND action = 'deny'" ) : 0;
+
+$log_blocked_7d = DarkShield_Utils::table_exists( $log_table )
+	? (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$log_table} WHERE blocked = 1 AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)" )
+	: 0;
+
+$top_domains = array();
+if ( DarkShield_Utils::table_exists( $log_table ) ) {
+	$top_domains = $wpdb->get_results(
+		"SELECT domain, COUNT(*) as cnt FROM {$log_table} WHERE blocked = 1 GROUP BY domain ORDER BY cnt DESC LIMIT 5"
+	);
+}
+
+$darkshield_trend_data = array();
+if ( DarkShield_Utils::table_exists( $log_table ) ) {
+	$rows = $wpdb->get_results(
+		"SELECT DATE(created_at) as d, COUNT(*) as total, SUM(blocked) as blocked FROM {$log_table} WHERE created_at >= DATE_SUB(NOW(), INTERVAL 14 DAY) GROUP BY DATE(created_at) ORDER BY d ASC"
+	);
+	foreach ( $rows as $row ) {
+		$darkshield_trend_data[] = array(
+			'd'       => $row->d,
+			'total'   => (int) $row->total,
+			'blocked' => (int) $row->blocked,
+		);
+	}
+}
 
 /**
  * Format date — Shamsi if wp-parsidate or wp-jalali active.
@@ -71,58 +101,101 @@ function darkshield_has_jalali() {
 }
 ?>
 
-<div class="wrap">
-	<h1>🛡️ <?php esc_html_e( 'DarkShield — Dashboard', 'darkshield' ); ?></h1>
+<?php
+$darkshield_page_title    = __( 'Dashboard', 'darkshield' );
+$darkshield_page_subtitle = __( 'Privacy shield, performance analyzer, and traffic control for your site.', 'darkshield' );
+?>
+<div class="wrap darkshield">
+	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-page-header.php'; ?>
 
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
-	<div style="margin-top:20px;">
+	<div>
 
 		<!-- Current Mode -->
-		<div class="card" style="max-width:100%;padding:20px;margin-bottom:20px;border-left:4px solid <?php echo esc_attr( $mi[1] ); ?>;">
-			<h2 style="margin-top:0;"><?php echo esc_html( $mi[0] . ' ' . __( 'Current Mode:', 'darkshield' ) . ' ' . DarkShield_Utils::get_mode_label() ); ?></h2>
-			<p><?php echo esc_html( $mi[2] ); ?></p>
+		<div class="darkshield-mode-banner" style="--ds-mode-color:<?php echo esc_attr( $mi[1] ); ?>;">
+			<h2 class="darkshield-card-title"><?php echo esc_html( $mi[0] ); ?> <?php esc_html_e( 'Current Mode:', 'darkshield' ); ?> <?php echo esc_html( $mi[2] ); ?></h2>
+			<p class="darkshield-card-subtitle"><?php echo esc_html( $mi[3] ); ?></p>
 
-			<form method="post" style="display:flex;gap:10px;margin-top:15px;">
+			<form method="post" class="darkshield-mode-grid">
 				<?php wp_nonce_field( 'darkshield_switch_mode' ); ?>
 				<?php foreach ( $mode_info as $key => $info ) : ?>
-					<?php if ( $key !== $mode ) : ?>
-						<button type="submit" name="darkshield_switch_mode" value="<?php echo esc_attr( $key ); ?>"
-							class="button" style="border-color:<?php echo esc_attr( $info[1] ); ?>;">
-							<?php echo esc_html( $info[0] . ' ' . DarkShield_Utils::get_mode_label( $key ) ); ?>
-						</button>
-					<?php endif; ?>
+					<?php $is_active = ( $key === $mode ); ?>
+					<button type="<?php echo $is_active ? 'button' : 'submit'; ?>"
+						<?php echo $is_active ? '' : 'name="darkshield_switch_mode" value="' . esc_attr( $key ) . '"'; ?>
+						class="darkshield-mode-card <?php echo $is_active ? 'is-active' : ''; ?>"
+						style="--ds-mode-color:<?php echo esc_attr( $info[1] ); ?>;">
+						<span class="darkshield-mode-card-icon"><?php echo esc_html( $info[0] ); ?></span>
+						<span class="darkshield-mode-card-body">
+							<span class="darkshield-mode-card-title"><?php echo esc_html( $info[2] ); ?></span>
+							<span class="darkshield-mode-card-desc"><?php echo esc_html( $info[3] ); ?></span>
+						</span>
+					</button>
 				<?php endforeach; ?>
 			</form>
 		</div>
 
 		<!-- Stats -->
-		<div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:20px;">
-			<div class="card" style="flex:1;min-width:140px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Log Entries', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;"><?php echo esc_html( number_format_i18n( $log_total ) ); ?></p>
+		<div class="darkshield-stats-row">
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Log Entries', 'darkshield' ); ?></h3>
+				<p><?php echo esc_html( number_format_i18n( $log_total ) ); ?></p>
 			</div>
-			<div class="card" style="flex:1;min-width:140px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Blocked', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;color:#d63638;"><?php echo esc_html( number_format_i18n( $log_blocked ) ); ?></p>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Blocked', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#dc2626;"><?php echo esc_html( number_format_i18n( $log_blocked ) ); ?></p>
 			</div>
-			<div class="card" style="flex:1;min-width:140px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Scan Results', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;color:#2271b1;"><?php echo esc_html( number_format_i18n( $scan_total ) ); ?></p>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Scan Results', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#0284c7;"><?php echo esc_html( number_format_i18n( $scan_total ) ); ?></p>
 			</div>
-			<div class="card" style="flex:1;min-width:140px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Whitelist', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;"><?php echo esc_html( $wl_count ); ?></p>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Whitelist', 'darkshield' ); ?></h3>
+				<p><?php echo esc_html( $wl_count ); ?></p>
 			</div>
-			<div class="card" style="flex:1;min-width:140px;padding:15px;">
-				<h3 style="margin:0 0 5px;font-size:12px;color:#666;"><?php esc_html_e( 'Services', 'darkshield' ); ?></h3>
-				<p style="margin:0;font-size:22px;font-weight:bold;color:#00a32a;"><?php echo esc_html( $svc_count ); ?></p>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Services', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#16a34a;"><?php echo esc_html( $svc_count ); ?></p>
 			</div>
 		</div>
 
+		<!-- Rule / Trend KPIs -->
+		<div class="darkshield-stats-row">
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Allow Rules', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#16a34a;"><?php echo esc_html( number_format_i18n( $allow_rules ) ); ?></p>
+			</div>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Deny Rules', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#dc2626;"><?php echo esc_html( number_format_i18n( $deny_rules ) ); ?></p>
+			</div>
+			<div class="darkshield-stat-card">
+				<h3><?php esc_html_e( 'Blocked (7 days)', 'darkshield' ); ?></h3>
+				<p style="--ds-stat-color:#dc2626;"><?php echo esc_html( number_format_i18n( $log_blocked_7d ) ); ?></p>
+			</div>
+		</div>
+
+		<!-- Trend Chart -->
+		<div class="card">
+			<h2><?php esc_html_e( 'Blocked Requests — Last 14 Days', 'darkshield' ); ?></h2>
+			<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-trend-chart.php'; ?>
+		</div>
+
+		<?php if ( ! empty( $top_domains ) ) : ?>
+			<!-- Top Blocked Domains -->
+			<div class="card">
+				<h2><?php esc_html_e( 'Most Blocked Domains', 'darkshield' ); ?></h2>
+				<?php foreach ( $top_domains as $td ) : ?>
+					<span class="darkshield-pill" style="color:#dc2626;">
+						<?php echo esc_html( $td->domain . ' (' . $td->cnt . ')' ); ?>
+					</span>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+
 		<!-- Active Blockers -->
-		<div class="card" style="max-width:100%;padding:20px;margin-bottom:20px;">
-			<h2 style="margin-top:0;"><?php esc_html_e( 'Active Blockers', 'darkshield' ); ?></h2>
+		<div class="card">
+			<h2><?php esc_html_e( 'Active Blockers', 'darkshield' ); ?></h2>
 			<?php
 			$labels = array(
 				'block_fonts'     => 'Fonts',
@@ -142,16 +215,16 @@ function darkshield_has_jalali() {
 				$color = $on ? '#00a32a' : '#999';
 				$icon  = $on ? '✓' : '✗';
 				?>
-				<span style="display:inline-block;margin:3px 6px 3px 0;padding:4px 10px;background:#f0f0f0;border-radius:3px;font-size:12px;color:<?php echo esc_attr( $color ); ?>;">
+				<span class="darkshield-pill" style="color:<?php echo esc_attr( $color ); ?>;">
 					<?php echo esc_html( $icon . ' ' . $label ); ?>
 				</span>
 			<?php endforeach; ?>
 		</div>
 
 		<!-- Quick Links -->
-		<div class="card" style="max-width:100%;padding:20px;">
-			<h2 style="margin-top:0;"><?php esc_html_e( 'Quick Links', 'darkshield' ); ?></h2>
-			<div style="display:flex;gap:10px;flex-wrap:wrap;">
+		<div class="card">
+			<h2><?php esc_html_e( 'Quick Links', 'darkshield' ); ?></h2>
+			<div class="darkshield-actions-row">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-scanner' ) ); ?>" class="button">🔍 <?php esc_html_e( 'Run Scanner', 'darkshield' ); ?></a>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-performance' ) ); ?>" class="button">🚀 <?php esc_html_e( 'Performance', 'darkshield' ); ?></a>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=darkshield-settings' ) ); ?>" class="button">⚙️ <?php esc_html_e( 'Settings', 'darkshield' ); ?></a>

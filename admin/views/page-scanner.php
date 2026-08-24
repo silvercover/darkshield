@@ -2,16 +2,18 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+$darkshield_page_title    = __( 'Scanner', 'darkshield' );
+$darkshield_page_subtitle = __( 'Find external URLs hiding in your theme, plugins, and database.', 'darkshield' );
 ?>
-<div class="wrap">
-	<h1>🛡️ <?php esc_html_e( 'DarkShield — Scanner', 'darkshield' ); ?></h1>
+<div class="wrap darkshield">
+	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-page-header.php'; ?>
 
 	<?php require DARKSHIELD_PLUGIN_DIR . 'admin/views/partials/partial-nav-tabs.php'; ?>
 
-	<div style="margin-top:20px;">
+	<div>
 
-		<div class="card" style="max-width:100%;padding:20px;margin-bottom:20px;">
-			<h2 style="margin-top:0;"><?php esc_html_e( 'Scan for External URLs', 'darkshield' ); ?></h2>
+		<div class="card">
+			<h2><?php esc_html_e( 'Scan for External URLs', 'darkshield' ); ?></h2>
 			<p><?php esc_html_e( 'Scan theme, plugin, and core files or database for external URLs.', 'darkshield' ); ?></p>
 
 			<p>
@@ -28,8 +30,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</p>
 
 			<div id="darkshield-scan-progress" style="display:none;margin-top:15px;">
-				<div style="background:#f0f0f0;border-radius:3px;overflow:hidden;height:24px;">
-					<div id="darkshield-progress-bar" style="background:#0073aa;height:24px;width:0%;text-align:center;color:#fff;font-size:12px;line-height:24px;transition:width 0.3s;">0%</div>
+				<div class="darkshield-progress-wrap">
+					<div id="darkshield-progress-bar" class="darkshield-progress-bar">0%</div>
 				</div>
 				<p id="darkshield-progress-text" style="margin:5px 0 0;font-size:12px;color:#666;"></p>
 			</div>

@@ -23,6 +23,7 @@ class DarkShield_Admin {
 		add_submenu_page( 'darkshield', __( 'Settings', 'darkshield' ), __( 'Settings', 'darkshield' ), 'manage_options', 'darkshield-settings', array( $this, 'render_settings' ) );
 		add_submenu_page( 'darkshield', __( 'Log', 'darkshield' ), __( 'Log', 'darkshield' ), 'manage_options', 'darkshield-log', array( $this, 'render_log' ) );
 		add_submenu_page( 'darkshield', __( 'Whitelist', 'darkshield' ), __( 'Whitelist', 'darkshield' ), 'manage_options', 'darkshield-whitelist', array( $this, 'render_whitelist' ) );
+		add_submenu_page( 'darkshield', __( 'Rules', 'darkshield' ), __( 'Rules', 'darkshield' ), 'manage_options', 'darkshield-rules', array( $this, 'render_rules' ) );
 		add_submenu_page( 'darkshield', __( 'About', 'darkshield' ), __( 'About', 'darkshield' ), 'manage_options', 'darkshield-about', array( $this, 'render_about' ) );
 	}
 
@@ -38,6 +39,7 @@ class DarkShield_Admin {
 			'darkshield_page_darkshield-settings',
 			'darkshield_page_darkshield-log',
 			'darkshield_page_darkshield-whitelist',
+			'darkshield_page_darkshield-rules',
 			'darkshield_page_darkshield-about',
 		);
 
@@ -52,6 +54,7 @@ class DarkShield_Admin {
 				'darkshield-settings',
 				'darkshield-log',
 				'darkshield-whitelist',
+				'darkshield-rules',
 				'darkshield-about',
 			);
 			$is_ds_page = in_array( $page, $ds_slugs, true );
@@ -66,6 +69,12 @@ class DarkShield_Admin {
 		}
 
 		$this->current_hook = $hook;
+
+		// DarkShield's own screens must never depend on an external request —
+		// regardless of the "Block Emoji" setting, strip WP core's emoji-to-image
+		// loader here so no s.w.org fetch can ever happen on our own pages.
+		remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+		remove_action( 'admin_print_styles', 'print_emoji_styles' );
 
 		// Use wp_enqueue for CSS
 		wp_enqueue_style(
@@ -300,6 +309,12 @@ class DarkShield_Admin {
 			$args[]  = $val;
 		}
 
+		$val = $this->input( 'log_rule_id' );
+		if ( '' !== $val ) {
+			$where[] = 'matched_rule_id = %d';
+			$args[]  = (int) $val;
+		}
+
 		if ( ! empty( $where ) ) {
 			$where_clause = implode( ' AND ', $where );
             // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe prefix
@@ -327,7 +342,7 @@ class DarkShield_Admin {
         // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fprintf
 		fprintf( $out, chr( 0xEF ) . chr( 0xBB ) . chr( 0xBF ) );
         // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
-		fputcsv( $out, array( 'ID', 'URL', 'Domain', 'Type', 'Source', 'Mode', 'Blocked', 'Date' ) );
+		fputcsv( $out, array( 'ID', 'URL', 'Domain', 'Type', 'Source', 'Mode', 'Blocked', 'Rule ID', 'Date' ) );
 
 		foreach ( (array) $rows as $r ) {
             // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
@@ -341,6 +356,7 @@ class DarkShield_Admin {
 					$r->source,
 					$r->mode,
 					$r->blocked ? 'Yes' : 'No',
+					isset( $r->matched_rule_id ) ? $r->matched_rule_id : '',
 					$r->created_at,
 				)
 			);
@@ -400,6 +416,8 @@ class DarkShield_Admin {
 		include DARKSHIELD_PLUGIN_DIR . 'admin/views/page-log.php'; }
 	public function render_whitelist() {
 		include DARKSHIELD_PLUGIN_DIR . 'admin/views/page-whitelist.php'; }
+	public function render_rules() {
+		include DARKSHIELD_PLUGIN_DIR . 'admin/views/page-rules.php'; }
 	public function render_about() {
 		include DARKSHIELD_PLUGIN_DIR . 'admin/views/page-about.php'; }
 }
